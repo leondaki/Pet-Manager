@@ -11,6 +11,11 @@
 		C7B657E02D348D7A00AFA8A2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B657DF2D348D7A00AFA8A2 /* ContentView.swift */; };
 		C7B657E22D348D7C00AFA8A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7B657E12D348D7C00AFA8A2 /* Assets.xcassets */; };
 		C7B657E52D348D7C00AFA8A2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7B657E42D348D7C00AFA8A2 /* Preview Assets.xcassets */; };
+		C7B657EC2D34932300AFA8A2 /* AddTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B657EB2D34932300AFA8A2 /* AddTaskView.swift */; };
+		C7B657F42D34C22400AFA8A2 /* TrendSansOne.otf in Resources */ = {isa = PBXBuildFile; fileRef = C7B657F32D34C21300AFA8A2 /* TrendSansOne.otf */; };
+		C7B657F62D34C2A500AFA8A2 /* WorkSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7B657F52D34C2A200AFA8A2 /* WorkSans-Regular.ttf */; };
+		C7B657F82D35D95E00AFA8A2 /* MyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B657F72D35D95E00AFA8A2 /* MyTask.swift */; };
+		C7B657FA2D37174700AFA8A2 /* MyPets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B657F92D37174700AFA8A2 /* MyPets.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +24,12 @@
 		C7B657DF2D348D7A00AFA8A2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C7B657E12D348D7C00AFA8A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C7B657E42D348D7C00AFA8A2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		C7B657EB2D34932300AFA8A2 /* AddTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskView.swift; sourceTree = "<group>"; };
+		C7B657F12D34BDCB00AFA8A2 /* Pet-Manager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Pet-Manager-Info.plist"; sourceTree = SOURCE_ROOT; };
+		C7B657F32D34C21300AFA8A2 /* TrendSansOne.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = TrendSansOne.otf; sourceTree = "<group>"; };
+		C7B657F52D34C2A200AFA8A2 /* WorkSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WorkSans-Regular.ttf"; sourceTree = "<group>"; };
+		C7B657F72D35D95E00AFA8A2 /* MyTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTask.swift; sourceTree = "<group>"; };
+		C7B657F92D37174700AFA8A2 /* MyPets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPets.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +46,7 @@
 		C7B657D12D348D7A00AFA8A2 = {
 			isa = PBXGroup;
 			children = (
+				C7B657EE2D34BC6800AFA8A2 /* fonts */,
 				C7B657DC2D348D7A00AFA8A2 /* Pet Manager */,
 				C7B657DB2D348D7A00AFA8A2 /* Products */,
 			);
@@ -51,8 +63,12 @@
 		C7B657DC2D348D7A00AFA8A2 /* Pet Manager */ = {
 			isa = PBXGroup;
 			children = (
+				C7B657F12D34BDCB00AFA8A2 /* Pet-Manager-Info.plist */,
 				C7B657DD2D348D7A00AFA8A2 /* Pet_ManagerApp.swift */,
+				C7B657F92D37174700AFA8A2 /* MyPets.swift */,
 				C7B657DF2D348D7A00AFA8A2 /* ContentView.swift */,
+				C7B657F72D35D95E00AFA8A2 /* MyTask.swift */,
+				C7B657EB2D34932300AFA8A2 /* AddTaskView.swift */,
 				C7B657E12D348D7C00AFA8A2 /* Assets.xcassets */,
 				C7B657E32D348D7C00AFA8A2 /* Preview Content */,
 			);
@@ -65,6 +81,15 @@
 				C7B657E42D348D7C00AFA8A2 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		C7B657EE2D34BC6800AFA8A2 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				C7B657F52D34C2A200AFA8A2 /* WorkSans-Regular.ttf */,
+				C7B657F32D34C21300AFA8A2 /* TrendSansOne.otf */,
+			);
+			path = fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,6 +152,8 @@
 			files = (
 				C7B657E52D348D7C00AFA8A2 /* Preview Assets.xcassets in Resources */,
 				C7B657E22D348D7C00AFA8A2 /* Assets.xcassets in Resources */,
+				C7B657F42D34C22400AFA8A2 /* TrendSansOne.otf in Resources */,
+				C7B657F62D34C2A500AFA8A2 /* WorkSans-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,7 +164,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7B657F82D35D95E00AFA8A2 /* MyTask.swift in Sources */,
+				C7B657EC2D34932300AFA8A2 /* AddTaskView.swift in Sources */,
 				C7B657E02D348D7A00AFA8A2 /* ContentView.swift in Sources */,
+				C7B657FA2D37174700AFA8A2 /* MyPets.swift in Sources */,
 				C7B657DE2D348D7A00AFA8A2 /* Pet_ManagerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -275,6 +305,7 @@
 				DEVELOPMENT_TEAM = ZTW9SQ7DNR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Pet-Manager-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -304,6 +335,7 @@
 				DEVELOPMENT_TEAM = ZTW9SQ7DNR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Pet-Manager-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
