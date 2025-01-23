@@ -37,15 +37,18 @@ struct HomeView:View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                VStack (alignment: .leading) {
+            VStack (alignment: .leading) {
+                VStack (alignment: .leading)  {
                     Text("Hi, Leonidas!")
-                        .font(Font.custom("TrendSansOne", size: 40))
-                    Text("You have \(taskManager.tasks.count) upcoming tasks.")
-                        .font(Font.custom("WorkSans-Regular", size: 20))
-                    
+                        .font(Font.custom("WorkSans-Regular", size: 30))
+                    Text("You have ")
+                    + Text("\(taskManager.tasks.count - taskManager.completedTasks)")
+                        .fontWeight(.bold)
+                        .foregroundColor(.brown)
+                    + Text(" upcoming tasks.")
                 }
-                .padding(.top, 24)
+                .padding(.leading, 20)
+                .padding(.top, 20)
                 .toolbar {
                     ToolbarItem(placement: .principal) {
                         Text("Pet Manager")
@@ -54,14 +57,15 @@ struct HomeView:View {
                             .foregroundStyle(Color(red: 1.0, green: 0.969, blue: 0.925))
                     }
                 }
-                .toolbarBackground(Color(red: 0.392, green: 0.335, blue: 0.272), for: .navigationBar)
+                .toolbarBackground(Color(red: 0.54, green: 0.46, blue: 0.37), for: .navigationBar)
                 .toolbarBackground(.visible, for: .navigationBar)
                 .navigationBarTitleDisplayMode(.inline)
                 
                 
                 TasksList()
             }
-            .background(Color(red: 1.0, green: 0.969, blue: 0.925))
+        
+            //.background(Color(red: 1.0, green: 0.969, blue: 0.925))
         }
         
     }

@@ -28,8 +28,8 @@ struct AddTaskView: View {
                 TextField("Task Description", text: $taskDescription)
                 
                 Picker("Select Pet", selection: $selectedPet) {
-                    ForEach(petManager.petNames, id:\.self) {pet in
-                        Text(pet)
+                    ForEach(petManager.pets) {pet in
+                        Text(pet.name)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())

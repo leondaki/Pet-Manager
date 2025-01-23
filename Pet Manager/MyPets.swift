@@ -8,12 +8,24 @@
 import Foundation
 import SwiftUI
 
+func testDate(year: Int, month: Int, day: Int) -> Date {
+    let calendar = Calendar.current
+    let components = DateComponents(year: year, month: month, day: day)
+    return calendar.date(from: components) ?? Date() // Default to current date if invalid
+}
+
+struct Pet: Identifiable {
+    let id = UUID()
+    var name: String
+    var birthdate: Date
+//    var color: Color
+}
+
 class PetManager: ObservableObject {
-    @Published var petNames: [String] = [
-        "Jupiter",
-        "Polly",
-        "Balto",
-        "Fishy"
+    @Published var pets: [Pet] = [
+        Pet(name: "Buddy", birthdate: testDate(year: 2020, month: 6, day: 15)),
+        Pet(name: "Mittens", birthdate: testDate(year: 2018, month: 11, day: 3)),
+        Pet(name: "Charlie", birthdate: testDate(year: 2021, month: 2, day: 28))
     ]
 }
 
@@ -36,7 +48,7 @@ struct PetsListView:View {
                     }
                     .padding()
             }
-            .navigationTitle("Pets List")
+            .navigationTitle("Pets List 🐾")
         }
     }
 }
@@ -46,19 +58,14 @@ struct PetsList:View {
     
     var body: some View {
         List {
-            ForEach(petManager.petNames, id:\.self) {
+            ForEach(petManager.pets) {
                 pet in
                 HStack {
                     VStack (alignment: .leading) {
-                        Text(pet)
+                        Text(pet.name)
                             .font(Font.custom("TrendSansOne", size: 16))
-//                        Text(task.description)
-//                            .font(Font.custom("WorkSans-Regular", size: 14))
-//                            .padding([.bottom], 8)
-//                        Text("🐾 \(task.pet)")
-//                            .font(Font.custom("WorkSans-Regular", size: 16))
-//                        Text("⏰ \(task.dueTime.formatted(.dateTime.month().day().year().hour().minute()))")
-//                            .font(Font.custom("WorkSans-Regular", size: 16))
+                        Text("⏰ \(pet.birthdate.formatted(.dateTime.month().day().year().hour().minute()))")
+                            .font(Font.custom("TrendSansOne", size: 16))
                     }
                 }
             }
