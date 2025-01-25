@@ -30,20 +30,28 @@ class PetManager: ObservableObject {
 struct PetsListView:View {
     var body: some View {
         @EnvironmentObject var petManager: PetManager
-        NavigationStack {
-            PetsList()
-                .navigationTitle("My Pets")
-                .toolbar {ToolbarItemGroup(placement: .topBarTrailing) {
-                        NavigationLink(destination: AddPetsView()) {
-                            Image(systemName: "plus.circle.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30)
-                                .foregroundColor(Color.black)
-                        }
+        VStack {
+            Rectangle()
+                .fill(Color.white)
+                .frame(height: 110)
+                .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
+                .overlay {
+                    VStack (alignment: .leading)  {
+                        Text("Pets")
+                            .font(.system(size: 34, weight: .bold))
+                        + Text("\nTap on a pet to edit it.")
+                            .font(.system(size: 20, weight: .regular))
+                        
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 20)
+                    
                 }
+                .padding(.bottom, 20)
+            
+            PetsList()
         }
+
     }
 }
 
@@ -53,24 +61,27 @@ struct PetsList:View {
     var body: some View {
         VStack {
             List {
-                ForEach(petManager.pets) {
-                    pet in
-                        Text(pet.name)
-                            .font(.system(size: 20, weight: .regular))
-                            .padding()
-                }
-                .onDelete { indexSet in
-                    petManager.pets.remove(atOffsets: indexSet)
-                }
+                ForEach($petManager.pets) {
+                    $pet in
+                    
+                    TextField("Pet Name", text: $pet.name)
+                        .font(.system(size: 20, weight: .regular))
+                        .padding()
+            }
+               
+            .onDelete { indexSet in
+                petManager.pets.remove(atOffsets: indexSet)
+            }
+           
                 .listRowInsets(EdgeInsets())
             }
             
+        }
             .listRowSpacing(10)
             
             
         }
     }
-}
 
 #Preview {
     ContentView()

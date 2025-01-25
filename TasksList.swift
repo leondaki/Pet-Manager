@@ -47,7 +47,7 @@ struct TasksList:View {
                     }
                 }
             }
-            .confirmationDialog("Task Options",
+            .confirmationDialog("Complete Task",
                                 isPresented: $taskManager.showConfirmation,
                                 actions: {
                 if let tappedTask = taskManager.selectedTask {

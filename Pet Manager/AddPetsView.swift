@@ -21,7 +21,7 @@ struct AddPetsView: View {
                 TextField("Pet Name", text: $petName)
             }
             Section {
-                Button("Save  Pet") {
+                Button("Save Pet") {
                     let newPet = Pet (name: petName)
                     petManager.pets.append(newPet)
                     presentationMode.wrappedValue.dismiss()

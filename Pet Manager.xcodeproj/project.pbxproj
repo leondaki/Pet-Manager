@@ -21,6 +21,7 @@
 		C7B658002D4308E700AFA8A2 /* TaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B657FF2D4308E700AFA8A2 /* TaskManager.swift */; };
 		C7B658022D43331500AFA8A2 /* AddPetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B658012D43331500AFA8A2 /* AddPetsView.swift */; };
 		C7B658042D4342FE00AFA8A2 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B658032D4342FE00AFA8A2 /* CustomTabBar.swift */; };
+		C7B658062D44367600AFA8A2 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B658052D44367600AFA8A2 /* Settings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		C7B657FF2D4308E700AFA8A2 /* TaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskManager.swift; sourceTree = "<group>"; };
 		C7B658012D43331500AFA8A2 /* AddPetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPetsView.swift; sourceTree = "<group>"; };
 		C7B658032D4342FE00AFA8A2 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		C7B658052D44367600AFA8A2 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 		C7B657D12D348D7A00AFA8A2 = {
 			isa = PBXGroup;
 			children = (
+				C7B658052D44367600AFA8A2 /* Settings.swift */,
 				C7B658032D4342FE00AFA8A2 /* CustomTabBar.swift */,
 				C7B657FD2D42DB8B00AFA8A2 /* TasksListItem.swift */,
 				C7B657FB2D42ADB900AFA8A2 /* TasksList.swift */,
@@ -188,6 +191,7 @@
 				C7B658042D4342FE00AFA8A2 /* CustomTabBar.swift in Sources */,
 				C7B657FA2D37174700AFA8A2 /* MyPets.swift in Sources */,
 				C7B657DE2D348D7A00AFA8A2 /* Pet_ManagerApp.swift in Sources */,
+				C7B658062D44367600AFA8A2 /* Settings.swift in Sources */,
 				C7B658022D43331500AFA8A2 /* AddPetsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

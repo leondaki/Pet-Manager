@@ -10,6 +10,12 @@ import SwiftUI
 
 struct CustomTabBar:View {
     @Binding var selectedTab: ContentView.Tab
+
+    private func switchTab(newTab: ContentView.Tab) {
+        if selectedTab != newTab {
+            selectedTab = newTab    
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -18,8 +24,13 @@ struct CustomTabBar:View {
                 let tabWidth = geometry.size.width / CGFloat(ContentView.Tab.allCases.count)
 
                 Rectangle()
-                    .fill(Color(red: 0.54, green: 0.46, blue: 0.37)) // Highlight background color
-                    .frame(width: tabWidth, height: 100) // Size of the highlight box
+                    .fill(Color.clear)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.blue) // Highlight background color
+                            .frame(width: tabWidth - 60, height: 4) // Size of the highlight box
+                    }   
+                    .frame(width: tabWidth, height: 20)
                     .offset(x: tabWidth * CGFloat(selectedTab.rawValue))
                     .animation(.easeInOut(duration: 0.3), value: selectedTab) // Smooth sliding
             }
@@ -28,20 +39,27 @@ struct CustomTabBar:View {
             HStack {
                 ForEach(ContentView.Tab.allCases, id: \.self) { tab in
                     Button(action: {
-                        selectedTab = tab
+                        switchTab(newTab: tab)
                     }) {
                         VStack {
                             Image(systemName: tab.icon)
-                                .font(.system(size: 30, weight: .bold))
+                                .font(.system(size: 24, weight: .bold))
                                 .foregroundColor(selectedTab == tab ?
-                                                 Color(red: 1, green: 0.93, blue: 0.82) : Color(red: 0.54, green: 0.46, blue: 0.37))
+                                                 Color.blue : Color.gray)
+                            
+                            Text(tab.title)
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(selectedTab == tab ?
+                                                 Color.blue : Color.gray)
                         }
                         .frame(maxWidth: .infinity) // Equal spacing for all tabs
                     }
                    // .padding()
                 }
             }
+            .padding(.top, 20)
+            .frame(height: 100, alignment: .top)
         }
-        .background( Color(red: 1.0, green: 0.969, blue: 0.925)) // Tab bar background color
+        //.background(Color.gray) // Tab bar background color
     }
 }
