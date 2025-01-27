@@ -49,8 +49,6 @@ struct ContentView: View {
                 .animation(.easeInOut, value: selectedTab)
                 
                 CustomTabBar(selectedTab: $selectedTab)
-                    .frame(height: 100)
-   
             }
             .ignoresSafeArea(edges: .bottom)
             .toolbar {
@@ -65,14 +63,15 @@ struct ContentView: View {
                         Text("Pet Manager")
                             .font(.system(size: 24, weight: .regular))
                             .foregroundStyle(Color.gray)
+                          
                     }
                 }
                 
-                if selectedTab == .home
+                if selectedTab != .settings
                 {
                     ToolbarItem(placement: .topBarTrailing) {
                         HStack {
-                            NavigationLink(destination: AddTaskView()) {
+                            NavigationLink(destination: selectedTab == .home ? AnyView(AddTaskView()) : AnyView((AddPetsView()))) {
                                 Image(systemName: "plus.circle.fill")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
@@ -84,6 +83,7 @@ struct ContentView: View {
                         }
                     }
                 }
+                
             }
         }      
     }
@@ -91,9 +91,11 @@ struct ContentView: View {
 
 struct HomeView:View {
     @EnvironmentObject var taskManager: TaskManager
-    
+    @State private var showText = false
+
     var body: some View {
-            let numTasks = taskManager.tasks.count - taskManager.numTasksDone
+        let numTasks = taskManager.tasks.count - taskManager.numTasksDone
+        
         
         VStack (spacing: 0) {
                 ZStack {

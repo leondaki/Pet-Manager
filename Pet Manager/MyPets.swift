@@ -14,9 +14,17 @@ func testDate(year: Int, month: Int, day: Int) -> Date {
     return calendar.date(from: components) ?? Date() // Default to current date if invalid
 }
 
-struct Pet: Identifiable {
+class Pet: Identifiable, ObservableObject, Equatable {
+    static func == (lhs: Pet, rhs: Pet) -> Bool {
+        lhs.id == rhs.id
+    }
+    
     let id = UUID()
-    var name: String
+    @Published var name: String
+    
+    init (name: String) {
+        self.name = name
+    }
 }
 
 class PetManager: ObservableObject {
@@ -30,7 +38,7 @@ class PetManager: ObservableObject {
 struct PetsListView:View {
     var body: some View {
         @EnvironmentObject var petManager: PetManager
-        VStack {
+        VStack (spacing: 0) {
             Rectangle()
                 .fill(Color.white)
                 .frame(height: 110)
@@ -39,16 +47,13 @@ struct PetsListView:View {
                     VStack (alignment: .leading)  {
                         Text("Pets")
                             .font(.system(size: 34, weight: .bold))
-                        + Text("\nTap on a pet to edit it.")
+                        + Text("\nTap on a pet to edit.")
                             .font(.system(size: 20, weight: .regular))
                         
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 20)
-                    
                 }
-                .padding(.bottom, 20)
-            
             PetsList()
         }
 
@@ -59,32 +64,35 @@ struct PetsList:View {
     @EnvironmentObject var petManager: PetManager
     
     var body: some View {
-        VStack {
-            List {
-                ForEach($petManager.pets) {
-                    $pet in
-                    
-                    TextField("Pet Name", text: $pet.name)
-                        .font(.system(size: 20, weight: .regular))
-                        .padding()
-            }
-               
-            .onDelete { indexSet in
-                petManager.pets.remove(atOffsets: indexSet)
-            }
-           
+        ScrollView {
+            LazyVStack (alignment: .leading, spacing: 30) {
+                ForEach(petManager.pets) { pet in
+                    Rectangle()
+                       .frame(height: 80)
+                       .shadow(color: Color.gray.opacity(0.4), radius: 4, x: 2, y: 4)
+                       .foregroundColor(.white)
+                       .overlay {
+                           Text(pet.name)
+                               .font(.system(size: 20, weight: .semibold))
+                               .frame(maxWidth: .infinity, alignment: .leading)
+                               .padding(.leading, 50)
+                       }
+                }
+                
+                .onDelete { indexSet in
+                    petManager.pets.remove(atOffsets: indexSet)
+                }
+                
                 .listRowInsets(EdgeInsets())
             }
-            
-        }
-            .listRowSpacing(10)
-            
-            
+            .padding(.top, 30)
+            .scrollContentBackground(.hidden)
         }
     }
+}
 
 #Preview {
-    ContentView()
+    PetsListView()
         .environmentObject(TaskManager())
         .environmentObject(PetManager())
 }

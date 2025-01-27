@@ -10,7 +10,11 @@ import SwiftUI
 
 struct AddTaskView: View {
     @State private var showAddButton: Bool = false
-    @StateObject private var newTask = MyTask(name: "", description: "", pet: "", dueTime: Date.now)
+    @StateObject private var newTask = MyTask(
+        name: "",
+        description: "",
+        pet: "",
+        dueTime: Date.now.addingTimeInterval(30 * 60))
     
     @EnvironmentObject var taskManager: TaskManager
     @EnvironmentObject var petManager: PetManager
@@ -19,37 +23,41 @@ struct AddTaskView: View {
     @State private var showDetails = false
     var body: some View {
         if petManager.pets.count > 0 {
-            VStack {
-                Form {
-                    Section(header:
-                        Text("Task Details")
-                            .font(.system(size: 18))
-                    ) {
-                        CustomInputField(text: $newTask.name, placeholder: "Task Name")
-                            .onChange(of: newTask.name.isEmpty) {
-                                withAnimation {
-                                    showAddButton.toggle()
+            GeometryReader { geometry in
+                VStack (spacing: 0) {
+                    Form {
+                        Section(header:Text("Task Details").font(.system(size: 18))) {
+                            CustomInputField(text: $newTask.name, placeholder: "Task Name")
+                                .onChange(of: newTask.name.isEmpty) {
+                                    withAnimation(.easeOut(duration: 0.4)) {
+                                        showAddButton.toggle()
+                                    }
+                                }
+                                .padding(.top, 10)
+                            
+                            CustomInputField(text: $newTask.description, placeholder: "Task Description")
+                            
+                            Picker("Select Pet", selection: $newTask.pet) {
+                                ForEach(petManager.pets) {pet in
+                                    Text(pet.name).tag(pet.name)
                                 }
                             }
-                        
-                        CustomInputField(text: $newTask.description, placeholder: "Task Description")
-                        
-                        Picker("Select Pet", selection: $newTask.pet) {
-                            ForEach(petManager.pets) {pet in
-                                Text(pet.name).tag(pet.name)
-                            }
+                            .pickerStyle(MenuPickerStyle())
+                            
+                            DatePicker("Due Date", selection: $newTask.dueTime, displayedComponents: [.date, .hourAndMinute])
+                                .padding(.bottom, 10)
+                            
                         }
-                        .pickerStyle(MenuPickerStyle())
-                        
-                        DatePicker("Due Date", selection: $newTask.dueTime, displayedComponents: [.date, .hourAndMinute])
-                        
+                        .listRowSeparator(.hidden)
                     }
-                    .listRowSeparator(.hidden)
+                    .frame(height: 340)
+                    //.scrollContentBackground(.hidden)
                     
                     VStack {
                         if showAddButton {
                             TaskListItemView(task: newTask, isPreview: true)
-                                .transition(.move(edge: .top))
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                            
                             
                             Button(action : {
                                 taskManager.tasks.append(newTask)
@@ -58,31 +66,36 @@ struct AddTaskView: View {
                                 VStack {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(.system(size: 60, weight: .bold))
+                                        .background(
+                                            Circle()
+                                                .fill(Color.white)
+                                                .frame(width: 60, height: 60)
+                                        )
                                     
                                     Text("Add Task")
-                                        .font(.system(size: 20, weight: showAddButton ? .bold : .regular))
+                                        .font(.system(size: 20, weight: .bold))
                                 }
                             }
                             .buttonStyle(PlainButtonStyle())
                             .foregroundStyle(Color.black)
-                            .transition(.move(edge: .bottom))
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
+                        
                         else {
-                            Text("You must add a Task Name!")
-                                .font(.system(size: 20, weight: showAddButton ? .bold : .regular))
-                                .frame(maxWidth: .infinity, alignment: .center)
+                            Text("You must add a Task Name")
+                                .font(.system(size: 20))
+                                .italic()
+                                .frame(maxWidth: .none, alignment: .center)
+                                .transition(.move(edge: .top).combined(with: .opacity))
                         }
                     }
-                    .animation(.easeOut(duration: 0.3), value: showAddButton)
-                    .listRowInsets(EdgeInsets())
-                    
+                    .frame(height: 260, alignment: .top)
                 }
-                .scrollContentBackground(.hidden)
-
+                .frame(maxWidth: .none, maxHeight: geometry.safeAreaInsets.top, alignment: .top)
+                .onAppear { newTask.pet = petManager.pets[0].name }
+                .navigationTitle("Add Task")
             }
-            .onAppear { newTask.pet = petManager.pets[0].name }
-            .navigationTitle("Add Task")
-           
+            .background(Color(UIColor.secondarySystemBackground))
         }
         else {
             VStack {
@@ -96,7 +109,7 @@ struct AddTaskView: View {
 }
 
 #Preview {
-    ContentView()
+    AddTaskView()
         .environmentObject(TaskManager())
         .environmentObject(PetManager())
 }
