@@ -21,9 +21,9 @@ struct Pet: Identifiable {
 
 class PetManager: ObservableObject {
     @Published var pets: [Pet] = [
-        Pet(name: "Jupiter"),
-        Pet(name: "Buddy"),
-        Pet(name: "Mittens")
+        Pet(name: "JJoey"),
+        Pet(name: "Ace"),
+        Pet(name: "Rex")
     ]
 }
 

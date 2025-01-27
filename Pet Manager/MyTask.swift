@@ -15,11 +15,11 @@ class MyTask: Identifiable, ObservableObject, Equatable {
     
     let id = UUID()
     
-    var name: String
-    var description: String
-    var pet: String
-    var dueTime: Date
-    var dateCompletedAt: Date? = nil
+    @Published var name: String
+    @Published var description: String
+    @Published var pet: String
+    @Published var dueTime: Date
+    @Published var dateCompletedAt: Date? = nil
     
     init(name: String, description: String, pet: String, dueTime: Date) {
         self.name = name
@@ -43,7 +43,7 @@ class MyTask: Identifiable, ObservableObject, Equatable {
         return Date() > dueTime
     }
     
-    var colors: (taskImage: String, taskBgColor: Color, taskImageColor: Color) {
+    var deco: (taskImage: String, taskBgColor: Color, taskImageColor: Color) {
         if completed {
             return (taskImage: "checkmark.circle.fill",
                     taskBgColor: Color.white,
@@ -55,7 +55,7 @@ class MyTask: Identifiable, ObservableObject, Equatable {
                     taskImageColor: Color.red)
         }
         
-        return (taskImage: "pawprint.circle.fill",
+        return (taskImage: "pawprint.circle",
                 taskBgColor: Color.white,
                 taskImageColor: Color.black)
     }

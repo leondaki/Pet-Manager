@@ -32,8 +32,8 @@ struct ContentView: View {
     }
 
     var body: some View {
-        NavigationView {
-            VStack {
+        NavigationStack {
+            VStack (spacing: 0) {
                 ZStack {
                     switch selectedTab {
                         case .home :
@@ -47,10 +47,10 @@ struct ContentView: View {
                     }
                 }
                 .animation(.easeInOut, value: selectedTab)
-                Spacer()
                 
                 CustomTabBar(selectedTab: $selectedTab)
                     .frame(height: 100)
+   
             }
             .ignoresSafeArea(edges: .bottom)
             .toolbar {
@@ -68,16 +68,18 @@ struct ContentView: View {
                     }
                 }
                 
-                if selectedTab == .home {
+                if selectedTab == .home
+                {
                     ToolbarItem(placement: .topBarTrailing) {
                         HStack {
-                            Button {} label: {
+                            NavigationLink(destination: AddTaskView()) {
                                 Image(systemName: "plus.circle.fill")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 60)
+                                    .frame(width: 30)
                                     .foregroundStyle(Color.black)
-                                    .background(.white)
+                                    .background(.clear)
+                                   
                             }
                         }
                     }
@@ -91,11 +93,13 @@ struct HomeView:View {
     @EnvironmentObject var taskManager: TaskManager
     
     var body: some View {
-            VStack {
+            let numTasks = taskManager.tasks.count - taskManager.numTasksDone
+        
+        VStack (spacing: 0) {
                 ZStack {
                     Rectangle()
                         .fill(Color.white)
-                        .frame(height: 110)
+                        .frame(height: 110)  
                         .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
                     
                     VStack (alignment: .leading)  {
@@ -103,20 +107,17 @@ struct HomeView:View {
                             .font(.system(size: 34, weight: .bold))
                         + Text("You have ")
                             .font(.system(size: 20, weight: .regular))
-                        + Text("\(taskManager.tasks.count - taskManager.numTasksDone)")
+                        + Text("\(numTasks)")
                             .font(.system(size: 20, weight: .regular))
-                        + Text(" upcoming tasks.")
+                        + Text(numTasks == 1 ? " upcoming task." : " upcoming tasks.")
                             .font(.system(size: 20, weight: .regular))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 20)
                 }
-                .padding(.bottom, 20)
-                
-                
                 
                 TasksList()
-
+                   
             }
     }
 }

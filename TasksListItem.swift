@@ -9,8 +9,9 @@ import Foundation
 import SwiftUI
 
 struct TaskListItemView: View {
-    let taskItem: MyTask
-    let itemTap: () -> Void
+    @ObservedObject var task: MyTask
+    let isPreview: Bool
+    //let itemTap: () -> Void
     
     @State var isTapped: Bool = false
     
@@ -24,66 +25,77 @@ struct TaskListItemView: View {
     }
     
     var body: some View {
-    RoundedRectangle(cornerRadius: 16)
-        .shadow(color: Color.gray.opacity(0.4), radius: 2, x: 2, y: 2)
-        .frame(height: 110)
-        .foregroundColor(taskItem.colors.taskBgColor)
+         Rectangle()
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .frame(height: 110)
+            .shadow(color: Color.gray.opacity(0.4), radius: 2, x: 2, y: 2)
+            .foregroundColor(task.deco.taskBgColor)
         .overlay {
             HStack {
                 VStack (alignment: .leading) {
-                    Text(taskItem.name)
+                    Text(task.name)
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(taskItem.colors.taskImageColor)
+                        .foregroundColor(task.deco.taskImageColor)
                     
-                    Text("for \(taskItem.pet)")
+                    Text("for \(task.pet)")
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(taskItem.colors.taskImageColor)
+                        .foregroundColor(task.deco.taskImageColor)
                     
                     Spacer()
                     
-                    Image(systemName: taskItem.colors.taskImage)
+                    Image(systemName: task.deco.taskImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 24)
-                        .foregroundColor(taskItem.colors.taskImageColor)
+                        .foregroundColor(task.deco.taskImageColor)
                 }
                 .frame(height: 80)
+
                 
                 Spacer()
                 
                 VStack (alignment: .trailing) {
-                    Label {
-                        Text(taskItem.dueTime.formatted(.dateTime.month().day().year()))
-                            .font(.system(size: 16, weight: .medium))
-                    } icon: {
-                        Image(systemName: taskItem.completed ? "calendar" : "calendar")
+                    HStack {
+                        Image(systemName: "calendar")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 16)
                             .foregroundColor(.black)
+                        
+                        Text(task.dueTime.formatted(.dateTime.month().day().year()))
+                            .font(.system(size: 16, weight: .medium))
+
+                       
                     }
                     
-                    Label {
-                        Text(taskItem.dueTime, style: .time)
-                            .font(.system(size: 16, weight: .medium))
-                    } icon: {
-                        Image(systemName: taskItem.completed ? "clock.fill" : "clock")
+                    HStack {
+                        Image(systemName: task.completed ? "clock.fill" : "clock")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 16)
                             .foregroundColor(.black)
+                        
+                        Text(task.dueTime, style: .time)
+                            .font(.system(size: 16, weight: .medium))
+                        
+                       
                     }
-
-                    Button(action: { taskManager.toggleConfirm(task: taskItem) }) {
-                        Text(taskItem.completed ? "Incomplete" : "Complete")
-                            .font(.system(size: 14, weight: .bold))
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 16)
-                            .foregroundColor(.white)
-                            .background(Color.black)
-                            .cornerRadius(20)
+      
+                    if !isPreview {
+                        Button(action: { taskManager.toggleConfirm(task: task) }) {
+                            Text(task.completed ? "Incomplete" : "Complete")
+                                .font(.system(size: 14, weight: .bold))
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 16)
+                                .foregroundColor(.white)
+                                .background(Color.black)
+                                .cornerRadius(20)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    else {
+                        Spacer()
+                    }
                 }
                 .frame(height: 80)
             }
@@ -101,7 +113,7 @@ struct TaskListItemView: View {
 }
 
 #Preview {
-    ContentView()
+   AddTaskView()
         .environmentObject(TaskManager())
         .environmentObject(PetManager())
 }

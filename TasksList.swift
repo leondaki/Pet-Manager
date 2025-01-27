@@ -13,21 +13,18 @@ struct TasksList:View {
     
     var body: some View {
         ScrollView {
-            LazyVStack (alignment: .leading) {
+            LazyVStack ( alignment: .leading) {
                 if !taskManager.upcomingTasks.isEmpty {
                     Text("Upcoming Tasks")
+                        .padding(.top, 20)
                         .padding(.leading, 20)
                         .font(.system(size: 20, weight: .bold))
 
                     ForEach(taskManager.upcomingTasks, id:\.id) { task in
-                        TaskListItemView(
-                            taskItem: task,
-                            itemTap: {
-                                
-                            }
-                           )
-                        .listRowSeparator(.hidden)
+                        TaskListItemView(task: task, isPreview: false)
+                            .listRowSeparator(.hidden)
                     }
+                    
                 }
                 
                 if !taskManager.completedTasks.isEmpty {
@@ -37,13 +34,8 @@ struct TasksList:View {
                         .font(.system(size: 20, weight: .bold))
                     
                     ForEach(taskManager.completedTasks, id:\.id) { task in
-                        TaskListItemView(
-                            taskItem: task,
-                            itemTap: {
-                                
-                            } 
-                        )
-                        .listRowSeparator(.hidden) 
+                        TaskListItemView(task: task, isPreview: false)
+                            .listRowSeparator(.hidden)
                     }
                 }
             }
@@ -63,6 +55,7 @@ struct TasksList:View {
             .animation(.easeInOut, value: taskManager.tasks)
         }
     }
+       
 }
 
 
