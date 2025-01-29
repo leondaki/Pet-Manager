@@ -14,17 +14,16 @@ struct TasksList:View {
     var body: some View {
         ScrollView {
             LazyVStack ( alignment: .leading) {
-                if !taskManager.upcomingTasks.isEmpty {
+                if !taskManager.tasks.isEmpty {
                     Text("Upcoming Tasks")
                         .padding(.top, 20)
                         .padding(.leading, 20)
                         .font(.system(size: 20, weight: .bold))
 
-                    ForEach(taskManager.upcomingTasks, id:\.id) { task in
-                        TaskListItemView(task: task, isPreview: false)
+                    ForEach($taskManager.tasks, id:\.id) { $task in
+                        TaskListItemView(task: $task, isPreview: false)
                             .listRowSeparator(.hidden)
                     }
-                    
                 }
                 
                 if !taskManager.completedTasks.isEmpty {
@@ -33,8 +32,8 @@ struct TasksList:View {
                         .padding(.top, 20)
                         .font(.system(size: 20, weight: .bold))
                     
-                    ForEach(taskManager.completedTasks, id:\.id) { task in
-                        TaskListItemView(task: task, isPreview: false)
+                    ForEach($taskManager.completedTasks, id:\.id) { $task in
+                        TaskListItemView(task: $task, isPreview: false)
                             .listRowSeparator(.hidden)
                     }
                 }
@@ -51,7 +50,6 @@ struct TasksList:View {
                 }
                 Button("Cancel", role: .cancel) {}
             })
-            //.background(Color(red: 1, green: 0.92, blue: 0.83))
             .animation(.easeInOut, value: taskManager.tasks)
         }
     }

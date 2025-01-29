@@ -10,20 +10,25 @@ import SwiftUI
 
 struct CustomInputField: View {
     @Binding var text: String
-    @FocusState private var isFocused: Bool
-
     var placeholder: String
+    
+    @FocusState.Binding var isFocused: Bool
+  
     var activeColor: Color = .black
     var inactiveColor: Color = Color(UIColor.systemGray3)
 
     var body: some View {
         TextField(placeholder, text: $text)
-            .padding()
+            .padding(16)
+            .frame(height: 50)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(isFocused ? activeColor : inactiveColor, lineWidth: 2)
                     .animation(.easeOut(duration: 0.1), value: isFocused)
             )
+            .onTapGesture {
+                isFocused = true
+            }
             .focused($isFocused)
     }
 }

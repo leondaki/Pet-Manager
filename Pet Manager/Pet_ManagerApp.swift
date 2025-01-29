@@ -11,12 +11,14 @@ import SwiftUI
 struct Pet_ManagerApp: App {
     @StateObject private var taskManager = TaskManager()
     @StateObject private var petManager = PetManager()
+    @StateObject private var tabOption = TabOption()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(taskManager)
                 .environmentObject(petManager)
+                .environmentObject(tabOption)
         }
     }
 }

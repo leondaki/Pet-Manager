@@ -10,10 +10,11 @@ import SwiftUI
 
 struct AddTaskView: View {
     @State private var showAddButton: Bool = false
-    @StateObject private var newTask = MyTask(
+    @State private var newTask = MyTask(
         name: "",
         description: "",
-        pet: "",
+        pet: Pet(name: "Default Pet"),
+        completed: false,
         dueTime: Date.now.addingTimeInterval(30 * 60))
     
     @EnvironmentObject var taskManager: TaskManager
@@ -21,25 +22,35 @@ struct AddTaskView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @State private var showDetails = false
+    @FocusState private var isNameFocused: Bool
+    @FocusState private var isDescriptionFocused: Bool
+    
     var body: some View {
         if petManager.pets.count > 0 {
             GeometryReader { geometry in
                 VStack (spacing: 0) {
                     Form {
                         Section(header:Text("Task Details").font(.system(size: 18))) {
-                            CustomInputField(text: $newTask.name, placeholder: "Task Name")
+                            CustomInputField(
+                                text: $newTask.name,
+                                placeholder: "Task Name",
+                                isFocused: $isNameFocused)
                                 .onChange(of: newTask.name.isEmpty) {
                                     withAnimation(.easeOut(duration: 0.4)) {
                                         showAddButton.toggle()
                                     }
                                 }
+                                .onAppear { isNameFocused = true }
                                 .padding(.top, 10)
                             
-                            CustomInputField(text: $newTask.description, placeholder: "Task Description")
+                            CustomInputField(
+                                text: $newTask.description,
+                                placeholder: "Task Description",
+                                isFocused: $isDescriptionFocused)
                             
                             Picker("Select Pet", selection: $newTask.pet) {
                                 ForEach(petManager.pets) {pet in
-                                    Text(pet.name).tag(pet.name)
+                                    Text(pet.name).tag(pet)
                                 }
                             }
                             .pickerStyle(MenuPickerStyle())
@@ -51,11 +62,10 @@ struct AddTaskView: View {
                         .listRowSeparator(.hidden)
                     }
                     .frame(height: 340)
-                    //.scrollContentBackground(.hidden)
-                    
+
                     VStack {
                         if showAddButton {
-                            TaskListItemView(task: newTask, isPreview: true)
+                            TaskListItemView(task: $newTask, isPreview: true)
                                 .transition(.move(edge: .top).combined(with: .opacity))
                             
                             
@@ -92,7 +102,7 @@ struct AddTaskView: View {
                     .frame(height: 260, alignment: .top)
                 }
                 .frame(maxWidth: .none, maxHeight: geometry.safeAreaInsets.top, alignment: .top)
-                .onAppear { newTask.pet = petManager.pets[0].name }
+                .onAppear { newTask.pet = petManager.pets[0] }
                 .navigationTitle("Add Task")
             }
             .background(Color(UIColor.secondarySystemBackground))

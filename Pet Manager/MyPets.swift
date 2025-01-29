@@ -8,21 +8,11 @@
 import Foundation
 import SwiftUI
 
-func testDate(year: Int, month: Int, day: Int) -> Date {
-    let calendar = Calendar.current
-    let components = DateComponents(year: year, month: month, day: day)
-    return calendar.date(from: components) ?? Date() // Default to current date if invalid
-}
-
-class Pet: Identifiable, ObservableObject, Equatable {
-    static func == (lhs: Pet, rhs: Pet) -> Bool {
-        lhs.id == rhs.id
-    }
-    
+struct Pet: Identifiable, Hashable {
     let id = UUID()
-    @Published var name: String
+    var name: String
     
-    init (name: String) {
+    init(name: String) {
         self.name = name
     }
 }
@@ -35,26 +25,29 @@ class PetManager: ObservableObject {
     ]
 }
 
-struct PetsListView:View {
+struct PetsListView: View {
+    @EnvironmentObject var petManager: PetManager
+
     var body: some View {
-        @EnvironmentObject var petManager: PetManager
-        VStack (spacing: 0) {
-            Rectangle()
-                .fill(Color.white)
-                .frame(height: 110)
-                .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
-                .overlay {
-                    VStack (alignment: .leading)  {
-                        Text("Pets")
-                            .font(.system(size: 34, weight: .bold))
-                        + Text("\nTap on a pet to edit.")
-                            .font(.system(size: 20, weight: .regular))
-                        
+        NavigationStack {
+            VStack (spacing: 0) {
+                Rectangle()
+                    .fill(Color.white)
+                    .frame(height: 110)
+                    .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
+                    .overlay {
+                        VStack (alignment: .leading)  {
+                            Text("Pets")
+                                .font(.system(size: 34, weight: .bold))
+                            + Text("\nYou have \(petManager.pets.count) pets.")
+                                .font(.system(size: 20, weight: .regular))
+                            
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 20)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 20)
-                }
-            PetsList()
+                PetsList()
+            }
         }
 
     }
@@ -66,28 +59,40 @@ struct PetsList:View {
     var body: some View {
         ScrollView {
             LazyVStack (alignment: .leading, spacing: 30) {
-                ForEach(petManager.pets) { pet in
+                ForEach(petManager.pets, id: \.id) { pet in
                     Rectangle()
-                       .frame(height: 80)
-                       .shadow(color: Color.gray.opacity(0.4), radius: 4, x: 2, y: 4)
-                       .foregroundColor(.white)
-                       .overlay {
-                           Text(pet.name)
-                               .font(.system(size: 20, weight: .semibold))
-                               .frame(maxWidth: .infinity, alignment: .leading)
-                               .padding(.leading, 50)
-                       }
+                        .padding()
+                        .frame(height: 40)
+                        .foregroundColor(.white)
+                        .overlay {
+                            NavigationLink(destination: EditPetView(pet: pet, tempName: pet.name)) {
+                                HStack {
+                                    Text(pet.name)
+                                        .font(.system(size: 24, weight: .semibold))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.leading, 50)
+                                        .foregroundStyle(Color.black)
+                                    
+                                    Spacer()
+                               
+                                    Image(systemName: "pencil")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 30)
+                                        .foregroundColor(.black)
+                                        .padding(.trailing,50)
+                                    
+                                }
+
+                            }
+                        }
+                    
+                    Divider()
                 }
                 
-                .onDelete { indexSet in
-                    petManager.pets.remove(atOffsets: indexSet)
-                }
-                
-                .listRowInsets(EdgeInsets())
             }
             .padding(.top, 30)
-            .scrollContentBackground(.hidden)
-        }
+            }
     }
 }
 

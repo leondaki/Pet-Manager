@@ -7,29 +7,33 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @State private var selectedTab: Tab = .home
-    @State private var prevTab: Tab = .home
+class TabOption:ObservableObject {
+    @Published var tab: Tab = .home
+}
+
+enum Tab: Int, CaseIterable {
+    case home, pets, settings
     
-    enum Tab: Int, CaseIterable {
-        case home, pets, settings
-        
-        var title: String {
-            switch self {
-                case .home: return "Home"
-                case .pets: return "Pets"
-                case .settings: return "Settings"
-            }
-        }
-        
-        var icon: String {
-            switch self {
-                case .home: return "house.fill"
-                case .pets: return "pawprint.fill"
-                case .settings: return "gearshape.fill"
-            }
+    var title: String {
+        switch self {
+            case .home: return "Home"
+            case .pets: return "Pets"
+            case .settings: return "Settings"
         }
     }
+    
+    var icon: String {
+        switch self {
+            case .home: return "house.fill"
+            case .pets: return "pawprint.fill"
+            case .settings: return "gearshape.fill"
+        }
+    }
+}
+
+
+struct ContentView: View {
+    @State var selectedTab: Tab = .home
 
     var body: some View {
         NavigationStack {
@@ -78,7 +82,6 @@ struct ContentView: View {
                                     .frame(width: 30)
                                     .foregroundStyle(Color.black)
                                     .background(.clear)
-                                   
                             }
                         }
                     }
@@ -96,7 +99,6 @@ struct HomeView:View {
     var body: some View {
         let numTasks = taskManager.tasks.count - taskManager.numTasksDone
         
-        
         VStack (spacing: 0) {
                 ZStack {
                     Rectangle()
@@ -104,15 +106,18 @@ struct HomeView:View {
                         .frame(height: 110)  
                         .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
                     
-                    VStack (alignment: .leading)  {
-                        Text("Hello Leonidas!\n")
+                    VStack (alignment: .leading, spacing: 0)  {
+                        Text("Hello Leonidas!")
                             .font(.system(size: 34, weight: .bold))
-                        + Text("You have ")
-                            .font(.system(size: 20, weight: .regular))
-                        + Text("\(numTasks)")
-                            .font(.system(size: 20, weight: .regular))
-                        + Text(numTasks == 1 ? " upcoming task." : " upcoming tasks.")
-                            .font(.system(size: 20, weight: .regular))
+                       
+                        HStack (spacing: 0) {
+                            Text("You have \(numTasks) ")
+                                .contentTransition(.numericText(value: Double(numTasks)))
+                                .font(.system(size: 20, weight: .regular))
+                            
+                            Text(numTasks == 1 ? "upcoming task.":"upcoming tasks.")
+                                .font(.system(size: 20, weight: .regular))
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 20)
@@ -128,4 +133,5 @@ struct HomeView:View {
     ContentView()
         .environmentObject(TaskManager())
         .environmentObject(PetManager())
+        .environmentObject(TabOption())
 }

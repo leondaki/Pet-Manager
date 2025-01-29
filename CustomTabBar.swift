@@ -9,10 +9,12 @@ import Foundation
 import SwiftUI
 
 struct CustomTabBar:View {
-    @Binding var selectedTab: ContentView.Tab
+    @EnvironmentObject var tabOption: TabOption
     
-    private func switchTab(newTab: ContentView.Tab) {
-        if selectedTab != newTab {
+    @Binding var selectedTab: Tab
+    
+    private func switchTab(newTab: Tab) {
+        if selectedTab != newTab { 
             selectedTab = newTab
         }
     }
@@ -27,7 +29,7 @@ struct CustomTabBar:View {
                     VStack {
                          // Sliding background indicator
                         GeometryReader { geometry in
-                            let tabWidth = geometry.size.width / CGFloat(ContentView.Tab.allCases.count)
+                            let tabWidth = geometry.size.width / CGFloat(Tab.allCases.count)
                             
                             Rectangle()
                                 .fill(Color.clear)
@@ -38,12 +40,12 @@ struct CustomTabBar:View {
                                 }
                                 .frame(width: tabWidth, height: 6)
                                 .offset(x: tabWidth * CGFloat(selectedTab.rawValue))
-                                .animation(.easeInOut(duration: 0.3), value: selectedTab) // Smooth sliding
+                                .animation(.easeInOut(duration: 0.3), value: selectedTab.rawValue) // Smooth sliding
                         }
                         
                        //  Tab items
                         HStack {
-                            ForEach(ContentView.Tab.allCases, id: \.self) { tab in
+                            ForEach(Tab.allCases, id: \.self) { tab in
                                 Button(action: {
                                     switchTab(newTab: tab)
                                 }) {
@@ -75,6 +77,7 @@ struct CustomTabBar:View {
     ContentView()
         .environmentObject(TaskManager())
         .environmentObject(PetManager())
+        .environmentObject(TabOption())
 }
 
 

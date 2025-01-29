@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct TaskListItemView: View {
-    @ObservedObject var task: MyTask
+    @Binding var task: MyTask
     let isPreview: Bool
     //let itemTap: () -> Void
     
@@ -37,7 +37,7 @@ struct TaskListItemView: View {
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(task.deco.taskImageColor)
                     
-                    Text("for \(task.pet)")
+                    Text("for \(task.pet.name)")
                         .font(.system(size: 14, weight: .regular))
                         .foregroundColor(task.deco.taskImageColor)
                     

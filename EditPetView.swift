@@ -1,30 +1,32 @@
 //
-//  AddPetsView.swift
+//  EditPetView.swift
 //  Pet Manager
 //
-//  Created by Leonidas Kalpaxis on 1/23/25.
+//  Created by Leonidas Kalpaxis on 1/28/25.
 //
 
 import Foundation
 import SwiftUI
 
-struct AddPetsView: View {
-    @State private var pet = Pet(name: "")
-    @State private var showAddButton: Bool = false
+struct EditPetView: View {
+    @State var pet: Pet
+    @State var tempName: String
+    @State private var showEditButton: Bool = false
     @FocusState private var isFocused: Bool
+    
     @EnvironmentObject var petManager: PetManager
+    @EnvironmentObject var taskManager: TaskManager
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        
         GeometryReader { geometry in
             VStack (spacing: 0) {
                 Form {
-                    Section(header: Text("Pet Name").font(.system(size: 18))) {
-                        CustomInputField(text: $pet.name, placeholder: "Name", isFocused: $isFocused)
-                            .onChange(of: pet.name.isEmpty) {
+                    Section(header: Text("Change Pet Name").font(.system(size: 18))) {
+                        CustomInputField(text: $tempName, placeholder: "", isFocused: $isFocused)
+                            .onChange(of: tempName) {
                                 withAnimation(.easeOut(duration: 0.3)) {
-                                    showAddButton.toggle()
+                                    showEditButton = tempName != pet.name
                                 }
                             }
                             .onAppear { isFocused = true }
@@ -34,24 +36,25 @@ struct AddPetsView: View {
                 }
                 .frame(height: 150)
                 
-                
-                VStack {
-                    if showAddButton {
-                        HStack {
-                            Text("Will be added as ")
-                            + Text("\(pet.name)")
-                                .font(.system(size: 16, weight: .bold))
-                        }
-                       // .transition(.opacity))
+                VStack (alignment: .leading){
+                    Text("Current name is ")
+                    + Text("\(pet.name)")
+                        .font(.system(size: 16, weight: .bold))
+                    
+                    if showEditButton {
+                        Text("New name is ")
+                        + Text("\(tempName)")
+                            .font(.system(size: 16, weight: .bold))
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
                 .padding(.leading, 40)
                 
                 VStack {
-                    if showAddButton {
+                    if showEditButton {
                         Button(action : {
-                            petManager.pets.append(pet)
+                            petManager.pets[0].name = tempName
+                            print("updated pets: \(petManager.pets.map {$0.name})")
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             VStack {
@@ -64,7 +67,7 @@ struct AddPetsView: View {
                                     )
                                 
                                 
-                                Text("Add Pet")
+                                Text("Edit Pet")
                                     .font(.system(size: 20, weight: .bold))
                             }
                         }
@@ -77,15 +80,16 @@ struct AddPetsView: View {
                 .padding(.top, 40)
                 
             }
+            .onAppear { tempName = pet.name }
             .frame(maxWidth: .none, maxHeight: geometry.safeAreaInsets.top, alignment: .top)
-            .navigationTitle("Add Pet")
+            .navigationTitle("Edit Pet")
         }
         .background(Color(UIColor.secondarySystemBackground))
     }
 }
 
 #Preview {
-    AddPetsView()
+    PetsListView()
         .environmentObject(TaskManager())
         .environmentObject(PetManager())
 }
