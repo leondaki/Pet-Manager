@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 
 struct EditPetView: View {
-    @State var pet: Pet
+    @ObservedObject var pet: Pet
+    
     @State var tempName: String
     @State private var showEditButton: Bool = false
     @FocusState private var isFocused: Bool
@@ -26,7 +27,7 @@ struct EditPetView: View {
                         CustomInputField(text: $tempName, placeholder: "", isFocused: $isFocused)
                             .onChange(of: tempName) {
                                 withAnimation(.easeOut(duration: 0.3)) {
-                                    showEditButton = tempName != pet.name
+                                    showEditButton = tempName != pet.name && !tempName.isEmpty
                                 }
                             }
                             .onAppear { isFocused = true }
@@ -42,19 +43,23 @@ struct EditPetView: View {
                         .font(.system(size: 16, weight: .bold))
                     
                     if showEditButton {
-                        Text("New name is ")
-                        + Text("\(tempName)")
-                            .font(.system(size: 16, weight: .bold))
+                        VStack {
+                            Text("New name is ")
+                            + Text("\(tempName)")
+                                .font(.system(size: 16, weight: .bold))
+                        }
+                        .transition(.move(edge:.bottom).combined(with: .opacity))
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
+                .frame(maxWidth: .infinity, maxHeight: 50, alignment: .leading)
                 .padding(.leading, 40)
                 
                 VStack {
                     if showEditButton {
                         Button(action : {
-                            petManager.pets[0].name = tempName
-                            print("updated pets: \(petManager.pets.map {$0.name})")
+                            if let index = petManager.pets.firstIndex(where: { $0.name == pet.name }) {
+                                petManager.pets[index].name = tempName
+                            }
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             VStack {

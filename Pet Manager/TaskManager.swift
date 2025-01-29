@@ -33,8 +33,6 @@ class TaskManager: ObservableObject {
     
     @Published var completedTasks: [MyTask] = []
     
-    @Published var numTasksDone = 0
-    
     @Published var selectedTask: MyTask? = MyTask(
         name: "Feed Jupiter",
         description: "Only half a can per serving!",
@@ -53,10 +51,20 @@ class TaskManager: ObservableObject {
     func markAsCompleted(task: MyTask) {
         withAnimation {
             if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-                numTasksDone += tasks[index].completed ? -1:1
-                tasks[index].dateCompletedAt = Date.now
                 tasks[index].completed.toggle()
-                print("completed \(task.name)!")
+                tasks[index].dateCompletedAt = Date.now
+                
+                completedTasks.append(contentsOf: tasks.filter{ $0.completed })
+                completedTasks.sort { $0.dueTime < $1.dueTime }
+                tasks.remove(at: index)
+            }
+            else if let index = completedTasks.firstIndex(where: { $0.id == task.id }) {
+                completedTasks[index].completed.toggle()
+                completedTasks[index].dateCompletedAt = Date.now
+                
+                tasks.append(contentsOf:completedTasks.filter{ !$0.completed })
+                tasks.sort { $0.dueTime < $1.dueTime }
+                completedTasks.remove(at: index)
             }
                 
             let generator = UIImpactFeedbackGenerator(style: .medium)

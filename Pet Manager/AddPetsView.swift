@@ -9,9 +9,10 @@ import Foundation
 import SwiftUI
 
 struct AddPetsView: View {
-    @State private var pet = Pet(name: "")
+    @StateObject private var pet = Pet(name: "")
     @State private var showAddButton: Bool = false
     @FocusState private var isFocused: Bool
+    
     @EnvironmentObject var petManager: PetManager
     @Environment(\.presentationMode) var presentationMode
     

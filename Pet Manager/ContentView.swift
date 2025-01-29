@@ -97,7 +97,7 @@ struct HomeView:View {
     @State private var showText = false
 
     var body: some View {
-        let numTasks = taskManager.tasks.count - taskManager.numTasksDone
+        let numTasks = taskManager.tasks.count
         
         VStack (spacing: 0) {
                 ZStack {

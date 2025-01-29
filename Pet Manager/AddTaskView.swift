@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AddTaskView: View {
     @State private var showAddButton: Bool = false
-    @State private var newTask = MyTask(
+    @StateObject private var newTask = MyTask(
         name: "",
         description: "",
         pet: Pet(name: "Default Pet"),
@@ -35,11 +35,11 @@ struct AddTaskView: View {
                                 text: $newTask.name,
                                 placeholder: "Task Name",
                                 isFocused: $isNameFocused)
-                                .onChange(of: newTask.name.isEmpty) {
+                            .onChange(of: newTask.name.isEmpty) {
                                     withAnimation(.easeOut(duration: 0.4)) {
                                         showAddButton.toggle()
                                     }
-                                }
+                                } 
                                 .onAppear { isNameFocused = true }
                                 .padding(.top, 10)
                             
@@ -58,14 +58,14 @@ struct AddTaskView: View {
                             DatePicker("Due Date", selection: $newTask.dueTime, displayedComponents: [.date, .hourAndMinute])
                                 .padding(.bottom, 10)
                             
-                        }
+                        }  
                         .listRowSeparator(.hidden)
                     }
                     .frame(height: 340)
 
                     VStack {
                         if showAddButton {
-                            TaskListItemView(task: $newTask, isPreview: true)
+                            TaskListItemView(task: newTask, isPreview: true)
                                 .transition(.move(edge: .top).combined(with: .opacity))
                             
                             

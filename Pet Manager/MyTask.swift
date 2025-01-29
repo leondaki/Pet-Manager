@@ -8,15 +8,19 @@
 import Foundation
 import SwiftUI
 
-struct MyTask: Identifiable, Equatable {
+class MyTask: Identifiable, ObservableObject, Equatable {
+    static func == (lhs:MyTask, rhs:MyTask) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     let id = UUID()
     
-    var name: String
-    var description: String
-    var pet: Pet
-    var dueTime: Date
-    var completed: Bool
-    var dateCompletedAt: Date? = nil
+    @Published var name: String
+    @Published var description: String
+    @Published var pet: Pet
+    @Published var dueTime: Date
+    @Published var completed: Bool
+    @Published var dateCompletedAt: Date? = nil
     
     init(name: String, description: String, pet: Pet, completed: Bool, dueTime: Date) {
         self.name = name

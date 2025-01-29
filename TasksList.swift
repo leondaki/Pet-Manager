@@ -20,8 +20,8 @@ struct TasksList:View {
                         .padding(.leading, 20)
                         .font(.system(size: 20, weight: .bold))
 
-                    ForEach($taskManager.tasks, id:\.id) { $task in
-                        TaskListItemView(task: $task, isPreview: false)
+                    ForEach(taskManager.tasks, id:\.id) { task in
+                        TaskListItemView(task: task, isPreview: false)
                             .listRowSeparator(.hidden)
                     }
                 }
@@ -32,8 +32,8 @@ struct TasksList:View {
                         .padding(.top, 20)
                         .font(.system(size: 20, weight: .bold))
                     
-                    ForEach($taskManager.completedTasks, id:\.id) { $task in
-                        TaskListItemView(task: $task, isPreview: false)
+                    ForEach(taskManager.completedTasks, id:\.id) { task in
+                        TaskListItemView(task: task, isPreview: false)
                             .listRowSeparator(.hidden)
                     }
                 }

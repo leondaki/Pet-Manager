@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct TaskListItemView: View {
-    @Binding var task: MyTask
+    @ObservedObject var task: MyTask
     let isPreview: Bool
     //let itemTap: () -> Void
     
