@@ -35,6 +35,17 @@ enum Tab: Int, CaseIterable {
 struct ContentView: View {
     @State var selectedTab: Tab = .home
 
+    init() {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.systemBackground
+            appearance.shadowColor = .clear // This removes the bottom border
+
+            UINavigationBar.appearance().standardAppearance = appearance
+            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+            UINavigationBar.appearance().compactAppearance = appearance
+    }
+    
     var body: some View {
         NavigationStack {
             VStack (spacing: 0) {
@@ -50,11 +61,10 @@ struct ContentView: View {
                             SettingsView()
                     }
                 }
-                .animation(.easeInOut, value: selectedTab)
+                //.animation(.easeInOut, value: selectedTab)
                 
                 CustomTabBar(selectedTab: $selectedTab)
             }
-            .ignoresSafeArea(edges: .bottom)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     HStack {
@@ -80,20 +90,22 @@ struct ContentView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 30)
-                                    .foregroundStyle(Color.black)
+                                    .foregroundStyle(Color.accentColor)
                                     .background(.clear)
                             }
                         }
                     }
                 }
-                
             }
-        }      
+            .ignoresSafeArea(edges: .bottom)
+        }
     }
 }
 
 struct HomeView:View {
     @EnvironmentObject var taskManager: TaskManager
+    @EnvironmentObject var settingsManager: SettingsManager
+    
     @State private var showText = false
 
     var body: some View {
@@ -102,18 +114,24 @@ struct HomeView:View {
         VStack (spacing: 0) {
                 ZStack {
                     Rectangle()
-                        .fill(Color.white)
-                        .frame(height: 110)  
+                        .fill(Color(UIColor.systemBackground))
+                        .frame(height: 110)
                         .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
                     
                     VStack (alignment: .leading, spacing: 0)  {
-                        Text("Hello Leonidas!")
+                        Text("Hello \(settingsManager.username.isEmpty ? "" : settingsManager.username)")
                             .font(.system(size: 34, weight: .bold))
+                            .foregroundStyle(Color.accentColor)
                        
                         HStack (spacing: 0) {
-                            Text("You have \(numTasks) ")
+                            Text("You have ")
                                 .contentTransition(.numericText(value: Double(numTasks)))
                                 .font(.system(size: 20, weight: .regular))
+                            
+                            Text("\(numTasks) ")
+                                .contentTransition(.numericText(value: Double(numTasks)))
+                                .font(.system(size: 20, weight: .regular))
+                                .foregroundStyle(Color.accentColor)
                             
                             Text(numTasks == 1 ? "upcoming task.":"upcoming tasks.")
                                 .font(.system(size: 20, weight: .regular))
@@ -122,10 +140,13 @@ struct HomeView:View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 20)
                 }
+                .zIndex(1)
                 
                 TasksList()
                    
             }
+            .background(Color(UIColor.secondarySystemBackground))
+
     }
 }
 
@@ -134,4 +155,5 @@ struct HomeView:View {
         .environmentObject(TaskManager())
         .environmentObject(PetManager())
         .environmentObject(TabOption())
+        .environmentObject(SettingsManager())
 }

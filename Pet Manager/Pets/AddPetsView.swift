@@ -33,17 +33,20 @@ struct AddPetsView: View {
                             .padding(.bottom, 10)
                     }
                 }
+                .scrollContentBackground(.hidden)
                 .frame(height: 150)
                 
                 
                 VStack {
                     if showAddButton {
-                        HStack {
+                        HStack (spacing: 0){
                             Text("Will be added as ")
-                            + Text("\(pet.name)")
+                                .font(.system(size: 16, weight: .regular))
+                            
+                            Text("\(pet.name)")
                                 .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(Color.accentColor)
                         }
-                       // .transition(.opacity))
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
@@ -63,10 +66,12 @@ struct AddPetsView: View {
                                             .fill(Color.white)
                                             .frame(width: 60, height: 60)
                                     )
+                                    .foregroundStyle(Color.accentColor)
                                 
                                 
                                 Text("Add Pet")
                                     .font(.system(size: 20, weight: .bold))
+                                    .foregroundStyle(Color.accentColor)
                             }
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -77,11 +82,11 @@ struct AddPetsView: View {
                 .frame(maxWidth: .infinity, maxHeight: 80)
                 .padding(.top, 40)
                 
+                
             }
             .frame(maxWidth: .none, maxHeight: geometry.safeAreaInsets.top, alignment: .top)
             .navigationTitle("Add Pet")
         }
-        .background(Color(UIColor.secondarySystemBackground))
     }
 }
 

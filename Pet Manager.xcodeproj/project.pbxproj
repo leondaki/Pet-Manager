@@ -24,6 +24,7 @@
 		C7B658062D44367600AFA8A2 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B658052D44367600AFA8A2 /* Settings.swift */; };
 		C7B658082D4585C100AFA8A2 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B658072D4585C000AFA8A2 /* CustomTextField.swift */; };
 		C7F7874E2D495E2600CC832E /* EditPetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F7874D2D495E2600CC832E /* EditPetView.swift */; };
+		C7F787502D4AB4E400CC832E /* EditTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F7874F2D4AB4E400CC832E /* EditTaskView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		C7B658052D44367600AFA8A2 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		C7B658072D4585C000AFA8A2 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		C7F7874D2D495E2600CC832E /* EditPetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPetView.swift; sourceTree = "<group>"; };
+		C7F7874F2D4AB4E400CC832E /* EditTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTaskView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,12 +64,8 @@
 		C7B657D12D348D7A00AFA8A2 = {
 			isa = PBXGroup;
 			children = (
-				C7F7874D2D495E2600CC832E /* EditPetView.swift */,
 				C7B658052D44367600AFA8A2 /* Settings.swift */,
 				C7B658032D4342FE00AFA8A2 /* CustomTabBar.swift */,
-				C7B657FD2D42DB8B00AFA8A2 /* TasksListItem.swift */,
-				C7B657FB2D42ADB900AFA8A2 /* TasksList.swift */,
-				C7B657EE2D34BC6800AFA8A2 /* fonts */,
 				C7B657DC2D348D7A00AFA8A2 /* Pet Manager */,
 				C7B657DB2D348D7A00AFA8A2 /* Products */,
 			);
@@ -84,14 +82,11 @@
 		C7B657DC2D348D7A00AFA8A2 /* Pet Manager */ = {
 			isa = PBXGroup;
 			children = (
+				C7F787532D4BE7F200CC832E /* Pets */,
+				C7F787522D4BE7BB00CC832E /* Tasks */,
 				C7B657F12D34BDCB00AFA8A2 /* Pet-Manager-Info.plist */,
 				C7B657DD2D348D7A00AFA8A2 /* Pet_ManagerApp.swift */,
-				C7B657F92D37174700AFA8A2 /* MyPets.swift */,
-				C7B658012D43331500AFA8A2 /* AddPetsView.swift */,
 				C7B657DF2D348D7A00AFA8A2 /* ContentView.swift */,
-				C7B657F72D35D95E00AFA8A2 /* MyTask.swift */,
-				C7B657FF2D4308E700AFA8A2 /* TaskManager.swift */,
-				C7B657EB2D34932300AFA8A2 /* AddTaskView.swift */,
 				C7B658072D4585C000AFA8A2 /* CustomTextField.swift */,
 				C7B657E12D348D7C00AFA8A2 /* Assets.xcassets */,
 				C7B657E32D348D7C00AFA8A2 /* Preview Content */,
@@ -102,6 +97,7 @@
 		C7B657E32D348D7C00AFA8A2 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
+				C7B657EE2D34BC6800AFA8A2 /* fonts */,
 				C7B657E42D348D7C00AFA8A2 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
@@ -114,6 +110,29 @@
 				C7B657F32D34C21300AFA8A2 /* TrendSansOne.otf */,
 			);
 			path = fonts;
+			sourceTree = "<group>";
+		};
+		C7F787522D4BE7BB00CC832E /* Tasks */ = {
+			isa = PBXGroup;
+			children = (
+				C7B657FB2D42ADB900AFA8A2 /* TasksList.swift */,
+				C7F7874F2D4AB4E400CC832E /* EditTaskView.swift */,
+				C7B657EB2D34932300AFA8A2 /* AddTaskView.swift */,
+				C7B657FF2D4308E700AFA8A2 /* TaskManager.swift */,
+				C7B657F72D35D95E00AFA8A2 /* MyTask.swift */,
+				C7B657FD2D42DB8B00AFA8A2 /* TasksListItem.swift */,
+			);
+			path = Tasks;
+			sourceTree = "<group>";
+		};
+		C7F787532D4BE7F200CC832E /* Pets */ = {
+			isa = PBXGroup;
+			children = (
+				C7F7874D2D495E2600CC832E /* EditPetView.swift */,
+				C7B657F92D37174700AFA8A2 /* MyPets.swift */,
+				C7B658012D43331500AFA8A2 /* AddPetsView.swift */,
+			);
+			path = Pets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -191,6 +210,7 @@
 				C7B657FC2D42ADBA00AFA8A2 /* TasksList.swift in Sources */,
 				C7F7874E2D495E2600CC832E /* EditPetView.swift in Sources */,
 				C7B657F82D35D95E00AFA8A2 /* MyTask.swift in Sources */,
+				C7F787502D4AB4E400CC832E /* EditTaskView.swift in Sources */,
 				C7B658002D4308E700AFA8A2 /* TaskManager.swift in Sources */,
 				C7B657EC2D34932300AFA8A2 /* AddTaskView.swift in Sources */,
 				C7B657FE2D42DB8B00AFA8A2 /* TasksListItem.swift in Sources */,

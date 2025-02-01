@@ -35,18 +35,24 @@ struct EditPetView: View {
                             .padding(.bottom, 10)
                     }
                 }
+                .scrollContentBackground(.hidden)
                 .frame(height: 150)
                 
                 VStack (alignment: .leading){
+        
                     Text("Current name is ")
-                    + Text("\(pet.name)")
+                        .font(.system(size: 16, weight: .regular))
+                   + Text("\(pet.name)")
                         .font(.system(size: 16, weight: .bold))
-                    
+
                     if showEditButton {
-                        VStack {
+                        HStack (spacing: 0) { 
                             Text("New name is ")
-                            + Text("\(tempName)")
+                                .font(.system(size: 16, weight: .regular))
+                            
+                            Text("\(tempName)")
                                 .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(Color.accentColor)
                         }
                         .transition(.move(edge:.bottom).combined(with: .opacity))
                     }
@@ -70,10 +76,12 @@ struct EditPetView: View {
                                             .fill(Color.white)
                                             .frame(width: 60, height: 60)
                                     )
+                                    .foregroundStyle(Color.accentColor)
                                 
                                 
                                 Text("Edit Pet")
                                     .font(.system(size: 20, weight: .bold))
+                                    .foregroundStyle(Color.accentColor)
                             }
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -89,7 +97,8 @@ struct EditPetView: View {
             .frame(maxWidth: .none, maxHeight: geometry.safeAreaInsets.top, alignment: .top)
             .navigationTitle("Edit Pet")
         }
-        .background(Color(UIColor.secondarySystemBackground))
+        .background(Color(UIColor.systemBackground))
+        
     }
 }
 

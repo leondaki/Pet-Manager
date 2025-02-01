@@ -12,6 +12,7 @@ struct Pet_ManagerApp: App {
     @StateObject private var taskManager = TaskManager()
     @StateObject private var petManager = PetManager()
     @StateObject private var tabOption = TabOption()
+    @StateObject private var settingsManager = SettingsManager()
     
     var body: some Scene {
         WindowGroup {
@@ -19,6 +20,8 @@ struct Pet_ManagerApp: App {
                 .environmentObject(taskManager)
                 .environmentObject(petManager)
                 .environmentObject(tabOption)
+                .environmentObject(settingsManager)
+                
         }
     }
 }

@@ -47,15 +47,10 @@ class MyTask: Identifiable, ObservableObject, Equatable {
         if completed {
             return (taskImage: "checkmark.circle.fill",
                     taskBgColor: Color.white,
-                    taskImageColor: Color.green)
-        }
-        else if hasPassedDue {
-            return (taskImage: "exclamationmark.circle.fill",
-                    taskBgColor: Color(red: 1, green: 0.8, blue: 0.8),
-                    taskImageColor: Color.red)
+                    taskImageColor: Color.accentColor)
         }
         
-        return (taskImage: "pawprint.circle",
+        return (taskImage: "circle",
                 taskBgColor: Color.white,
                 taskImageColor: Color.black)
     }

@@ -14,8 +14,8 @@ struct CustomInputField: View {
     
     @FocusState.Binding var isFocused: Bool
   
-    var activeColor: Color = .black
-    var inactiveColor: Color = Color(UIColor.systemGray3)
+    var activeColor: Color = Color.accentColor
+    var inactiveColor: Color = Color.gray
 
     var body: some View {
         TextField(placeholder, text: $text)

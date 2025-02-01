@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UserNotifications
 
 class TaskManager: ObservableObject {
     @EnvironmentObject var petManager: PetManager
@@ -44,7 +45,7 @@ class TaskManager: ObservableObject {
     @Published var showConfirmation: Bool = false
     
     func toggleConfirm(task: MyTask) {
-        showConfirmation = true
+        //showConfirmation = true
         selectedTask = task
     }
     
@@ -71,4 +72,56 @@ class TaskManager: ObservableObject {
             generator.impactOccurred()
         }
     }
+    
+    func checkNotificationPermission(completion: @escaping (Bool) -> Void)  {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                if settings.authorizationStatus == .authorized {
+                    completion(true)
+                }
+            }
+        }
+    }
+    
+    func scheduleNotification(for task: MyTask) {
+        let notificationID = task.id.uuidString
+        let deadline = task.dueTime
+        let content = UNMutableNotificationContent()
+        
+        content.title = "Task Reminder"
+        content.body = "Your task \"\(task.name)\" is due soon!"
+        content.sound = .default
+
+        // Trigger 0 minutes before the deadline
+        let triggerDate = Calendar.current.date(byAdding: .minute, value: 0, to: deadline) ?? deadline
+        let triggerComponents = Calendar.current.dateComponents(
+              [.year, .month, .day, .hour, .minute],
+              from: triggerDate)
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerComponents, repeats: false)
+
+        let request = UNNotificationRequest(identifier: notificationID, content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Failed to schedule notification: \(error.localizedDescription)")
+            } else {
+                let formatter = DateFormatter()
+                formatter.timeZone = TimeZone.current // Apply local timezone
+                formatter.dateStyle = .medium
+                formatter.timeStyle = .short
+                
+                print("Notification scheduled for \(task.name) at \(formatter.string(from: triggerDate))")
+            }
+        }
+    }
+    
+    func updateNotification(for task: MyTask) {
+        let notificationID = task.id.uuidString
+        
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationID])
+        
+        scheduleNotification(for: task)
+    }
+
 }

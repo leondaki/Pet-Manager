@@ -22,7 +22,7 @@ struct CustomTabBar:View {
     var body: some View {
         VStack {
             Rectangle()
-                .fill(Color.white)
+                .fill(Color(UIColor.systemBackground))
                 .frame(maxWidth: .infinity)
                 .shadow(color: Color.gray.opacity(0.2), radius: 2, y: -3)
                 .overlay {
@@ -35,7 +35,7 @@ struct CustomTabBar:View {
                                 .fill(Color.clear)
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 10)
-                                        .fill(Color.blue) // Highlight background color
+                                        .fill(Color.accentColor) // Highlight background color
                                         .frame(width: max(tabWidth - 60, 0))
                                 }
                                 .frame(width: tabWidth, height: 6)
@@ -53,12 +53,12 @@ struct CustomTabBar:View {
                                         Image(systemName: tab.icon)
                                             .font(.system(size: 24, weight: .bold))
                                             .foregroundColor(selectedTab == tab ?
-                                                             Color.blue : Color.gray)
+                                                             Color.accentColor : Color.gray)
                                         
                                         Text(tab.title)
                                             .font(.system(size: 14, weight: .bold))
                                             .foregroundColor(selectedTab == tab ?
-                                                             Color.blue : Color.gray)
+                                                             Color.accentColor : Color.gray)
                                     }
                                     .frame(maxWidth: .infinity) // Equal spacing for all tabs
                                 }
