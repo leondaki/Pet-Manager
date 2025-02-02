@@ -11,7 +11,11 @@ import SwiftUI
 struct TasksList:View {
     @EnvironmentObject var taskManager: TaskManager
     
-    func removeRow(at offsets: IndexSet) {
+    func removeTask(at offsets: IndexSet) {
+        for index in offsets {
+            let task = taskManager.tasks[index]
+            taskManager.deleteNotification(for: task)
+        }
         taskManager.tasks.remove(atOffsets: offsets)
     }
                  
@@ -28,7 +32,7 @@ struct TasksList:View {
                             TaskListItemView(task: task, isPreview: false)
                                 .listRowSeparator(.hidden)
                         }
-                        .onDelete(perform: removeRow)
+                        .onDelete(perform: removeTask)
                     }
                 }
 
@@ -41,7 +45,7 @@ struct TasksList:View {
                         TaskListItemView(task: task, isPreview: false)
                             .listRowSeparator(.hidden)
                     }
-                    .onDelete(perform: removeRow)
+                    .onDelete(perform: removeTask)
                 }
             }
         }

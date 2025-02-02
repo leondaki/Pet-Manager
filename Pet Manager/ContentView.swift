@@ -45,7 +45,6 @@ struct ContentView: View {
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
             UINavigationBar.appearance().compactAppearance = appearance
     }
-    
     var body: some View {
         NavigationStack {
             VStack (spacing: 0) {

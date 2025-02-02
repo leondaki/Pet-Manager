@@ -117,11 +117,14 @@ class TaskManager: ObservableObject {
     }
     
     func updateNotification(for task: MyTask) {
+        deleteNotification(for: task)
+        scheduleNotification(for: task)
+    }
+    
+    func deleteNotification(for task: MyTask) {
         let notificationID = task.id.uuidString
         
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationID])
-        
-        scheduleNotification(for: task)
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationID])   
     }
 
 }
