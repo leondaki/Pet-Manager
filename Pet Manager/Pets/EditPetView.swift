@@ -7,27 +7,43 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 struct EditPetView: View {
-    @ObservedObject var pet: Pet
+    @Bindable var pet: MyPet
+    @Query var pets: [MyPet]
     
     @State var tempName: String
-    @State private var showEditButton: Bool = false
+    @State private var isButtonVisible: Bool = false
+    @State private var showDuplicateAlert: Bool = false
+    @State private var nameWasChanged: Bool = false
+    
     @FocusState private var isFocused: Bool
     
-    @EnvironmentObject var petManager: PetManager
     @EnvironmentObject var taskManager: TaskManager
     @Environment(\.presentationMode) var presentationMode
     
+    
+     func canEditPet() -> Bool {
+         let isDuplicate = pets.contains(where: { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == tempName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
+         
+         let isEmpty = tempName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased().isEmpty
+         
+         return (tempName != pet.name) && !isDuplicate && !isEmpty
+     }
+     
     var body: some View {
         GeometryReader { geometry in
             VStack (spacing: 0) {
                 Form {
                     Section(header: Text("Change Pet Name").font(.system(size: 18))) {
-                        CustomInputField(text: $tempName, placeholder: "", isFocused: $isFocused)
+                        CustomInputField(text: $tempName, placeholder: "", isFocused: $isFocused, isBgVisible: true)
                             .onChange(of: tempName) {
                                 withAnimation(.easeOut(duration: 0.3)) {
-                                    showEditButton = tempName != pet.name && !tempName.isEmpty
+                                    
+                                    showDuplicateAlert = pets.contains(where: { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == tempName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
+                                    isButtonVisible = canEditPet()
+                                    nameWasChanged = tempName != pet.name
                                 }
                             }
                             .onAppear { isFocused = true }
@@ -38,35 +54,59 @@ struct EditPetView: View {
                 .scrollContentBackground(.hidden)
                 .frame(height: 150)
                 
-                VStack (alignment: .leading){
-        
-                    Text("Current name is ")
-                        .font(.system(size: 16, weight: .regular))
-                   + Text("\(pet.name)")
-                        .font(.system(size: 16, weight: .bold))
-
-                    if showEditButton {
-                        HStack (spacing: 0) { 
-                            Text("New name is ")
-                                .font(.system(size: 16, weight: .regular))
+                VStack (alignment:.leading, spacing:0){
+                    HStack (spacing: 0) {
+                        Text("Current name is ")
+                            .font(.system(size: 16, weight: .regular))
+                        Text("\(pet.name)")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .frame(height: 30)
+                    
+                    if nameWasChanged && showDuplicateAlert {
+                        VStack (alignment: .leading) {
+                            HStack (spacing: 0) {
+                                Text("\(tempName.trimmingCharacters(in: .whitespacesAndNewlines)) ")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(Color.accentColor)
+                                
+                                Text("already exists!")
+                                    .font(.system(size: 16, weight: .bold))
+                            }
                             
-                            Text("\(tempName)")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(Color.accentColor)
+                            Text("Please choose a different name.")
+                                .font(.system(size: 16))
                         }
-                        .transition(.move(edge:.bottom).combined(with: .opacity))
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                    else if isButtonVisible {
+                            HStack (spacing: 0) {
+                                Text("New name is ")
+                                    .font(.system(size: 16, weight: .regular))
+                                
+                                Text("\(tempName)")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(Color.accentColor)
+                            }
+                            .transition(.move(edge:.bottom).combined(with: .opacity))
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: 50, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 50, alignment: .top)
                 .padding(.leading, 40)
                 
                 VStack {
-                    if showEditButton {
+                    if isButtonVisible {
                         Button(action : {
-                            if let index = petManager.pets.firstIndex(where: { $0.name == pet.name }) {
-                                petManager.pets[index].name = tempName
+                            // submits current text field input
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            
+                            if canEditPet() {
+                                if let index = pets.firstIndex(where: { $0.name == pet.name }) {
+                                    pets[index].name = tempName
+                                }
+                                presentationMode.wrappedValue.dismiss()
                             }
-                            presentationMode.wrappedValue.dismiss()
                         }) {
                             VStack {
                                 Image(systemName: "checkmark.circle.fill")
@@ -84,6 +124,7 @@ struct EditPetView: View {
                                     .foregroundStyle(Color.accentColor)
                             }
                         }
+                        .disabled(!isButtonVisible)
                         .buttonStyle(PlainButtonStyle())
                         .foregroundStyle(Color.black)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -91,7 +132,7 @@ struct EditPetView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: 80)
                 .padding(.top, 40)
-                
+
             }
             .onAppear { tempName = pet.name }
             .frame(maxWidth: .none, maxHeight: geometry.safeAreaInsets.top, alignment: .top)
@@ -102,8 +143,18 @@ struct EditPetView: View {
     }
 }
 
-#Preview {
-    PetsListView()
-        .environmentObject(TaskManager())
-        .environmentObject(PetManager())
-}
+//#Preview {
+//    do {
+//        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+//        let container = try ModelContainer(for: MyPet.self, configurations: config)
+//        
+//        return EditPetView(pet: MyPet(name: "Pepper"), tempName: "Pepper")
+//            .environmentObject(TaskManager())
+//          //  .environmentObject(PetManager())
+//            .environmentObject(SettingsManager())
+//            .modelContainer(container)
+//    } catch {
+//        fatalError("Failed to create model container")
+//    }
+//}
+//

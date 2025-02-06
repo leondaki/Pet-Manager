@@ -7,39 +7,19 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
-class MyTask: Identifiable, ObservableObject, Equatable {
-    static func == (lhs:MyTask, rhs:MyTask) -> Bool {
-        return lhs.id == rhs.id
-    }
+@Model
+class TaskItem {
+    var id: UUID
+    var name: String
+    var descr: String
+    var dueTime: Date
+    var completed: Bool
+    var dateCompletedAt: Date? = nil
+    var pet: MyPet
     
-    let id = UUID()
-    
-    @Published var name: String
-    @Published var description: String
-    @Published var pet: Pet
-    @Published var dueTime: Date
-    @Published var completed: Bool
-    @Published var dateCompletedAt: Date? = nil
-    
-    init(name: String, description: String, pet: Pet, completed: Bool, dueTime: Date) {
-        self.name = name
-        self.description = description
-        self.pet = pet
-        self.completed = completed
-        self.dueTime = dueTime
-    }
-    
-    var dueDescription: String {
-        //let now = Date()
-        //let formatter = RelativeDateTimeFormatter()
-        //formatter.unitsStyle = .full // Options: .full, .short, .abbreviated
-
-        // return "Due \(formatter.localizedString(for: dueTime, relativeTo: now))"
-        return "\(dueTime)"
-    }
-    
-    var hasPassedDue:Bool {
+    var hasPassedDue: Bool {
         return Date() > dueTime
     }
     
@@ -53,5 +33,23 @@ class MyTask: Identifiable, ObservableObject, Equatable {
         return (taskImage: "circle",
                 taskBgColor: Color.white,
                 taskImageColor: Color.black)
+    }
+    
+    init (
+        id: UUID = UUID(),
+        name: String,
+        descr: String,
+        dueTime: Date,
+        completed: Bool,
+        dateCompletedAt: Date? = nil,
+        pet: MyPet
+    ) {
+        self.id = id
+        self.name = name
+        self.descr = descr
+        self.dueTime = dueTime
+        self.completed = completed
+        self.dateCompletedAt = dateCompletedAt
+        self.pet = pet
     }
 }

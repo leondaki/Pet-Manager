@@ -16,15 +16,25 @@ struct CustomInputField: View {
   
     var activeColor: Color = Color.accentColor
     var inactiveColor: Color = Color.gray
-
+    
+    var isBgVisible: Bool
+    
     var body: some View {
         TextField(placeholder, text: $text)
             .padding(16)
             .frame(height: 50)
             .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isFocused ? activeColor : inactiveColor, lineWidth: 2)
-                    .animation(.easeOut(duration: 0.1), value: isFocused)
+                ZStack {
+                    if isBgVisible {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(UIColor.secondarySystemBackground))
+                            .padding(-20)
+                    }
+                
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(isFocused ? activeColor : inactiveColor, lineWidth: 2)
+                        .animation(.easeOut(duration: 0.1), value: isFocused)
+                }
             )
             .onTapGesture {
                 isFocused = true
@@ -33,8 +43,8 @@ struct CustomInputField: View {
     }
 }
 
-#Preview {
-   AddTaskView()
-        .environmentObject(TaskManager())
-        .environmentObject(PetManager())
-}
+//#Preview {
+//   AddTaskView()
+//        .environmentObject(TaskManager())
+//        .environmentObject(PetManager())
+//}

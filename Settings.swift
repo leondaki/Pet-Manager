@@ -9,7 +9,23 @@ import Foundation
 import SwiftUI
 
 class SettingsManager: ObservableObject{
-    @Published var username: String = ""
+    @Published var selectedAccentColor: String {
+        // ensures new value is immediately saved to user defaults when changed
+        didSet {
+            UserDefaults.standard.set(selectedAccentColor, forKey: "selectedAccentColor")
+        }
+    }
+    
+    init() {
+        if let storedColor = UserDefaults.standard.string(forKey: "selectedAccentColor") {
+            print("using stored color: \(storedColor)")
+            self.selectedAccentColor = storedColor
+        }
+        else {
+            UserDefaults.standard.set("AccentColorRed", forKey: "selectedAccentColor")
+            self.selectedAccentColor = "AccentColorRed"
+        }
+    }
 }
 
 enum AppIcon: String, CaseIterable {
@@ -38,14 +54,29 @@ enum AppIcon: String, CaseIterable {
             case .appIconRabbit: "AppIcon-Rabbit-Preview"
         }
     }
+    
+    var iconColor: String {
+        switch self {
+            case .appIcon: "AccentColorBlue"
+            case .appIconDog: "AccentColorRed"
+            case .appIconFish: "AccentColorNavy"
+            case .appIconBear: "AccentColorBrown"
+            case .appIconSnake: "AccentColorGreen"
+            case .appIconRabbit: "AccentColorOrange"
+        }
+    }
 }
 
 struct SettingsView:View {
-    @EnvironmentObject var settingsManager: SettingsManager
+    //@EnvironmentObject var settingsManager: SettingsManager
     
     @FocusState private var isNameFocused: Bool
     @State private var currentIcon: String? = UIApplication.shared.alternateIconName
+   
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
+    @AppStorage("username") var username: String = ""
+
+    @EnvironmentObject var settingsManager: SettingsManager
     
     private func requestNotificationPermission() {
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
@@ -84,9 +115,10 @@ struct SettingsView:View {
                     .listRowInsets(EdgeInsets())
                     .padding(.top, 30).padding(.bottom, 10)) {
                     CustomInputField(
-                        text: $settingsManager.username,
+                        text: $username,
                         placeholder: "Enter Your Name",
-                        isFocused: $isNameFocused
+                        isFocused: $isNameFocused,
+                        isBgVisible: false
                     )
                     .padding(.top, 10)
                     .padding(.bottom, 10)
@@ -108,7 +140,7 @@ struct SettingsView:View {
                                 }
                             }
                 
-                Section(header: Text("App Icon").font(.system(size: 18))
+                Section(header: Text("App Theme").font(.system(size: 18))
                     .listRowInsets(EdgeInsets())
                     .padding(.top, 10)
                     .padding(.bottom, 10)) {
@@ -131,8 +163,10 @@ struct SettingsView:View {
                             }
                             .onTapGesture {
                                 UIApplication.shared.setAlternateIconName(icon.iconValue)
+                            
                                 withAnimation {
                                     currentIcon = UIApplication.shared.alternateIconName
+                                    settingsManager.selectedAccentColor = icon.iconColor
                                 }
                             }
                         }
@@ -143,12 +177,12 @@ struct SettingsView:View {
             }
             
         }
+       
     }
 }
 
-#Preview {
-    SettingsView()
-        .environmentObject(TaskManager())
-        .environmentObject(PetManager())
-        .environmentObject(SettingsManager())
-}
+//#Preview {
+//    SettingsView()
+//        .environmentObject(TaskManager(tasks:))
+//        .environmentObject(SettingsManager())
+//}

@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct Pet_ManagerApp: App {
+    @Query var tasks: [TaskItem]
+    
     @StateObject private var taskManager = TaskManager()
-    @StateObject private var petManager = PetManager()
     @StateObject private var tabOption = TabOption()
     @StateObject private var settingsManager = SettingsManager()
     
@@ -18,10 +20,13 @@ struct Pet_ManagerApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(taskManager)
-                .environmentObject(petManager)
                 .environmentObject(tabOption)
-                .environmentObject(settingsManager)
-                
+                .environmentObject(settingsManager)   
         }
+        .modelContainer(for: [MyPet.self, TaskItem.self])
+    }
+    
+    init() {
+        print(URL.applicationSupportDirectory.path(percentEncoded: false))
     }
 }

@@ -7,73 +7,91 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 struct AddTaskView: View {
-    @State private var showAddButton: Bool = false
-    @StateObject private var newTask = MyTask(
-        name: "",
-        description: "",
-        pet: Pet(name: "Default Pet"),
-        completed: false,
-        dueTime: Date.now.addingTimeInterval(30 * 60))
+    @State private var isButtonVisible: Bool = false
+    @State private var isButtonEnabled: Bool = false
+    
+    let pets: [MyPet]
+    let tasks: [TaskItem]
+    @State var tempName = ""
+    @State var tempDescr = ""
+    @State var tempDueTime = Date.now
+    @State var tempPet: MyPet = MyPet(name: "Unnamed Pet")
     
     @EnvironmentObject var taskManager: TaskManager
-    @EnvironmentObject var petManager: PetManager
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.modelContext) var modelContext
     
     @State private var showDetails = false
     @FocusState private var isNameFocused: Bool
-    @FocusState private var isDescriptionFocused: Bool
+    @FocusState private var isDescriptionFocused: Bool 
     
     var body: some View {
-        if petManager.pets.count > 0 {
+        if pets.count > 0 {
             GeometryReader { geometry in
                 VStack (spacing: 0) {
                     Form {
                         Section(header:Text("Task Details").font(.system(size: 18))) {
                             CustomInputField(
-                                text: $newTask.name,
+                                text: $tempName,
                                 placeholder: "Task Name",
-                                isFocused: $isNameFocused)
-                            .onChange(of: newTask.name.isEmpty) {
+                                isFocused: $isNameFocused,
+                                isBgVisible: false)
+                            .onChange(of: tempName.isEmpty) {
+                                isButtonEnabled.toggle()
                                 withAnimation(.easeOut(duration: 0.4)) {
-                                    showAddButton.toggle()
+                                    isButtonVisible.toggle()
                                 }
                             }
                             .onAppear { isNameFocused = true }
                             .padding(.top, 10)
                             
                             CustomInputField(
-                                text: $newTask.description,
+                                text: $tempDescr,
                                 placeholder: "Task Description",
-                                isFocused: $isDescriptionFocused)
+                                isFocused: $isDescriptionFocused,
+                                isBgVisible: false)
                             
-                            Picker("Select Pet", selection: $newTask.pet) {
-                                ForEach(petManager.pets) {pet in
+                            Picker("Select Pet", selection: $tempPet) {
+                                ForEach(pets) {pet in
                                     Text(pet.name).tag(pet)
-                                }
+                                } 
                             }
                             .pickerStyle(MenuPickerStyle())
                             
-                            DatePicker("Due Date", selection: $newTask.dueTime, displayedComponents: [.date, .hourAndMinute])
+                            DatePicker("Due Date", selection: $tempDueTime, displayedComponents: [.date, .hourAndMinute])
                                 .padding(.bottom, 10)
                             
                         }
                         .listRowSeparator(.hidden)
                        
                         VStack {
-                            if showAddButton {
-                                TaskListItemView(task: newTask, isPreview: true)
+                            if isButtonVisible {
+                                let newTask = TaskItem(
+                                    id: UUID(),
+                                    name: tempName,
+                                    descr: tempDescr,
+                                    dueTime: tempDueTime,
+                                    completed: false, 
+                                    pet: tempPet
+                                )
+                                
+                                TaskListItemView(task: newTask, pets: pets, tasks: tasks, isPreview: true)
                                     .transition(.move(edge: .top).combined(with: .opacity))
                                 
                                 Button(action : {
-                                    taskManager.tasks.append(newTask)
-                                    taskManager.checkNotificationPermission {
-                                        isAuthorized in
-                                        if isAuthorized {
-                                            taskManager.scheduleNotification(for: newTask)
-                                        }
-                                    }
+                                    // submits current text field input
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                    
+                                    modelContext.insert(newTask)
+//                                    taskManager.checkNotificationPermission {
+//                                        isAuthorized in
+//                                        if isAuthorized {
+//                                            taskManager.scheduleNotification(for: newTask)
+//                                        }
+//                                    }
                                     presentationMode.wrappedValue.dismiss()
                                 }) {
                                     VStack {
@@ -91,11 +109,11 @@ struct AddTaskView: View {
                                             .foregroundStyle(Color.accentColor)
                                     }
                                 }
-                                .buttonStyle(PlainButtonStyle())
+                                .disabled(!isButtonEnabled)
                                 .transition(.move(edge: .bottom).combined(with: .opacity))
-                            }
+                           }
                             
-                            else {
+                           else {
                                 Text("You must add a Task Name")
                                     .font(.system(size: 20))
                                     .italic()
@@ -108,7 +126,6 @@ struct AddTaskView: View {
                         .listRowInsets(EdgeInsets())
                     }
                 }
-                .onAppear { newTask.pet = petManager.pets[0] }
                 .navigationTitle("Add Task")
                 .background(Color(UIColor.systemBackground))
             }
@@ -126,9 +143,12 @@ struct AddTaskView: View {
     }
     
 }
-
-#Preview {
-    AddTaskView()
-        .environmentObject(TaskManager())
-        .environmentObject(PetManager())
-}
+//
+//#Preview {
+//    SwiftDataViewer(preview: PreviewContainer([MyPet.self, TaskItem.self]),
+//                    items: [MyPet(name: "Test Guy")]) {
+//        AddTaskView()
+//            .environmentObject(TaskManager())
+//            .environmentObject(PetManager())
+//    }
+//}

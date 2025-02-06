@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CustomTabBar:View {
     @EnvironmentObject var tabOption: TabOption
+    @EnvironmentObject var settingsManager: SettingsManager
     
     @Binding var selectedTab: Tab
     
@@ -35,7 +36,7 @@ struct CustomTabBar:View {
                                 .fill(Color.clear)
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 10)
-                                        .fill(Color.accentColor) // Highlight background color
+                                        .fill(Color(settingsManager.selectedAccentColor)) // Highlight background color
                                         .frame(width: max(tabWidth - 60, 0))
                                 }
                                 .frame(width: tabWidth, height: 6)
@@ -53,12 +54,12 @@ struct CustomTabBar:View {
                                         Image(systemName: tab.icon)
                                             .font(.system(size: 24, weight: .bold))
                                             .foregroundColor(selectedTab == tab ?
-                                                             Color.accentColor : Color.gray)
+                                                             Color(settingsManager.selectedAccentColor) : Color.gray)
                                         
                                         Text(tab.title)
                                             .font(.system(size: 14, weight: .bold))
                                             .foregroundColor(selectedTab == tab ?
-                                                             Color.accentColor : Color.gray)
+                                                             Color(settingsManager.selectedAccentColor) : Color.gray)
                                     }
                                     .frame(maxWidth: .infinity) // Equal spacing for all tabs
                                 }
@@ -73,11 +74,10 @@ struct CustomTabBar:View {
 }
 
 
-#Preview {
-    ContentView()
-        .environmentObject(TaskManager())
-        .environmentObject(PetManager())
-        .environmentObject(TabOption())
-}
+//#Preview {
+//    ContentView()
+//        .environmentObject(TaskManager())
+//        .environmentObject(TabOption())
+//}
 
 

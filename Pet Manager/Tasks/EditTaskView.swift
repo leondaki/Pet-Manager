@@ -9,19 +9,26 @@ import Foundation
 import SwiftUI
 
 struct EditTaskView: View {
-    @ObservedObject var task: MyTask
+    @Bindable var task: TaskItem
+    let pets: [MyPet]
+    let tasks: [TaskItem]
+    @Environment(\.modelContext) private var modelContext
+//    @State var tempTask = TaskItem(id: UUID(),
+//                                   name: "",
+//                                   descr: "Default Pet",
+//                                   dueTime: Date.now.addingTimeInterval(30 * 60),
+//                                   completed: false)
     
-    @StateObject var tempTask = MyTask(name: "",
-                                       description: "",
-                                       pet: Pet(name: "Default Pet"),
-                                       completed: false,
-                                       dueTime: Date.now.addingTimeInterval(30 * 60))
+    @State var tempName = ""
+    @State var tempDescr = ""
+    @State var tempDueTime = Date.now
+    @State var tempPet: MyPet
     
     @State private var showEditButton: Bool = false
     @FocusState private var isNameFocused: Bool
     @FocusState private var isDescriptionFocused: Bool
     
-    @EnvironmentObject var petManager: PetManager
+
     @EnvironmentObject var taskManager: TaskManager
     @Environment(\.presentationMode) var presentationMode
     
@@ -29,50 +36,51 @@ struct EditTaskView: View {
         GeometryReader { geometry in
             VStack (spacing: 0) {
                 Form {
-                    Section(header:Text("Task Details").font(.system(size: 18))) {
-                        CustomInputField(
-                            text: $tempTask.name,
+                    Section(header: Text("Task Details").font(.system(size: 18))) {
+                        CustomInputField (
+                            text: $tempName,
                             placeholder: "Task Name",
-                            isFocused: $isNameFocused)
+                            isFocused: $isNameFocused, isBgVisible: false)
                             .onAppear { isNameFocused = true }
-                            .onChange(of: tempTask.name) {
+                            .onChange(of: tempName) {
                                 withAnimation {
-                                    showEditButton = tempTask.name != task.name && !tempTask.name.isEmpty }
+                                    showEditButton = tempName != task.name && !tempName.isEmpty }
                             }
                             .padding(.top, 10)
                         
                         CustomInputField(
-                            text: $tempTask.description,
+                            text: $tempDescr,
                             placeholder: "Task Description",
-                            isFocused: $isDescriptionFocused)
-                        .onChange(of: tempTask.description) {
+                            isFocused: $isDescriptionFocused,
+                            isBgVisible: false)
+                        .onChange(of: tempDescr) {
                             withAnimation {
-                                showEditButton = tempTask.description != task.description }
+                                showEditButton = tempDescr != task.descr }
                         }
                         
-                        Picker("Select Pet", selection: $tempTask.pet) {
-                            ForEach(petManager.pets) {pet in
+                        Picker("Select Pet", selection: $tempPet) {
+                            ForEach(pets) {pet in
                                 Text(pet.name).tag(pet)
                             }
                         }
                         .pickerStyle(MenuPickerStyle())
-                        .onChange(of: tempTask.pet) {
+                        .onChange(of: tempPet) {
                             withAnimation {
-                                showEditButton = tempTask.pet != task.pet }
+                                showEditButton = tempPet != task.pet }
                         }
                         
-                        DatePicker("Due Date", selection: $tempTask.dueTime, displayedComponents: [.date, .hourAndMinute])
+                        DatePicker("Due Date", selection: $tempDueTime, displayedComponents: [.date, .hourAndMinute])
                             .padding(.bottom, 10)
-                            .onChange(of: tempTask.dueTime) {
+                            .onChange(of: tempDueTime) {
                                 withAnimation {
-                                    showEditButton = tempTask.dueTime != task.dueTime }
+                                    showEditButton = tempDueTime != task.dueTime }
                             }
                         
                     }
                     .listRowSeparator(.hidden)
                     
                     VStack {
-                        TaskListItemView(task: tempTask, isPreview: true)
+                        TaskListItemView(task: task, pets: pets, tasks: tasks, isPreview: true)
                     }
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
@@ -82,15 +90,25 @@ struct EditTaskView: View {
                     VStack {
                         if showEditButton {
                             Button(action : {
-                                if let index = taskManager.tasks.firstIndex(where: { $0.id == task.id }) {
-                                    taskManager.tasks[index] = tempTask
+                                task.name =  tempName
+                                task.descr = tempDescr
+                                task.dueTime = tempDueTime
+                                task.pet = tempPet
+                                
+                                do {
+                                    try modelContext.save()
+                                } catch {
+                                    print("Failed to Update Task: \(error)")
                                 }
-                                taskManager.checkNotificationPermission {
-                                    isAuthorized in
-                                    if isAuthorized {
-                                        taskManager.updateNotification(for: tempTask)
-                                    }
-                                }
+//                                if let index = taskManager.tasks.firstIndex(where: { $0.id == task.id }) {
+//                                    taskManager.tasks[index] = tempTask
+//                                }
+//                                taskManager.checkNotificationPermission {
+//                                    isAuthorized in
+//                                    if isAuthorized {
+//                                        taskManager.updateNotification(for: tempTask)
+//                                    }
+//                                }
                                 presentationMode.wrappedValue.dismiss()
                             }) {
                                 VStack {
@@ -117,18 +135,18 @@ struct EditTaskView: View {
                 }
            }
             .onAppear {
-                tempTask.name = task.name
-                tempTask.description = task.description
-                tempTask.pet = task.pet
-                tempTask.dueTime = task.dueTime
+                tempName = task.name
+                tempDescr = task.descr
+                tempDueTime = task.dueTime
+                tempPet = task.pet 
             }
             .navigationTitle("Edit Task")
         }
     }
 }
-
-#Preview {
-    EditTaskView(task: TaskManager().tasks[0])
-        .environmentObject(TaskManager())
-        .environmentObject(PetManager())
-}
+//
+//#Preview {
+//    EditTaskView(task: TaskManager().tasks[0])
+//        .environmentObject(TaskManager())
+//        .environmentObject(PetManager())
+//}

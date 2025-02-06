@@ -7,44 +7,25 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
-class Pet: Identifiable, ObservableObject, Hashable, Equatable {
-    static func == (lhs:Pet, rhs:Pet) -> Bool {
-        return lhs.id == rhs.id
-    }
+@Model
+class MyPet {
+    // let id: UUID
+    var name: String
+    @Relationship(deleteRule: .cascade, inverse: \TaskItem.pet) var tasks: [TaskItem]
     
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    let id = UUID()
-    @Published var name: String
-    
-    init(name: String) {
+    init(name: String, tasks: [TaskItem] = []) {
         self.name = name
-    }
-}
-
-class PetManager: ObservableObject {
-    @Published var pets: [Pet] = [
-        Pet(name: "JJoey"),
-        Pet(name: "Ace"),
-        Pet(name: "Rex")
-    ]
-    
-    func deletePet(_ pet: Pet) {
-        withAnimation {
-            if let index = pets.firstIndex(where: { $0.id == pet.id }) {
-                pets.remove(at: index)
-                
-            }
-        }
+        self.tasks = tasks
     }
 }
 
 struct PetsListView: View {
-    @EnvironmentObject var petManager: PetManager
-
+    @EnvironmentObject var settingsManager: SettingsManager
+    
+    let pets : [MyPet]
+    
     var body: some View {
         NavigationStack {
             VStack (spacing: 0) {
@@ -60,13 +41,13 @@ struct PetsListView: View {
                                 Text("You have ")
                                     .font(.system(size: 20, weight: .regular))
                                 
-                                Text("\(petManager.pets.count)")
-                                    .contentTransition(.numericText(value: Double(petManager.pets.count)))
-                                    .animation(.easeOut, value: petManager.pets.count)
+                                Text("\(pets.count)")
+                                    .contentTransition(.numericText(value: Double(pets.count)))
+                                    .animation(.easeOut, value: pets.count)
                                     .font(.system(size: 20, weight: .regular))
-                                    .foregroundStyle(Color.accentColor)
+                                    .foregroundStyle( Color(settingsManager.selectedAccentColor))
                                 
-                                Text(petManager.pets.count == 1 ? " pet." : " pets.")
+                                Text(pets.count == 1 ? " pet." : " pets.")
                                     .font(.system(size: 20, weight: .regular))
                             }
                         }
@@ -75,7 +56,8 @@ struct PetsListView: View {
                     }
                     .zIndex(1)
                 
-                PetsList()
+                PetsList(pets: pets)
+                    
             }
             .background(Color(UIColor.secondarySystemBackground))
         }
@@ -84,27 +66,57 @@ struct PetsListView: View {
 }
 
 struct PetsList:View {
-    @EnvironmentObject var petManager: PetManager
+   // @EnvironmentObject var petManager: PetManager
     @State private var swipedRow: UUID? = nil
     
-    func removeRow(at offsets: IndexSet) {
-        petManager.pets.remove(atOffsets: offsets)
+    @State private var isConfirmVisible: Bool = false
+    @State private var petToDeleteIndex: IndexSet?
+    
+    let pets : [MyPet]
+    @Environment(\.modelContext) private var modelContext
+    
+    private func confirmDelete(at offsets: IndexSet) {
+        petToDeleteIndex = offsets
+        isConfirmVisible = true
     }
-                              
+    
+    var petToDeleteName: String {
+        if let index = petToDeleteIndex?.first {
+            return pets[index].name
+        }
+        return "this pet"
+    }
+    
+    func deletePets(_ indexSet: IndexSet) {
+        for index in indexSet {
+            let pet = pets[index]
+            modelContext.delete(pet)
+        }
+        
+        petToDeleteIndex = nil
+    }
+                         
     var body: some View {
         List {
-            ForEach(petManager.pets) { pet in
-                    PetRowView(pet: pet)
+            ForEach(pets) { pet in
+                PetRowView(pet: pet)
             }
-            .onDelete(perform: removeRow)
-        } 
+            .onDelete(perform: confirmDelete)
+        }
+        .confirmationDialog("This will also delete all tasks for \(petToDeleteName).",
+                            isPresented: $isConfirmVisible, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                deletePets(petToDeleteIndex ?? [])
+             }
+            Button("Cancel", role: .cancel) {
+                petToDeleteIndex = nil // Reset selection if canceled
+            }
+         }
     }
 }
 
 struct PetRowView: View {
-    @ObservedObject var pet: Pet
-    
-    @EnvironmentObject var petManager: PetManager
+    var pet: MyPet
     
     var body: some View {
         ZStack {
@@ -125,9 +137,11 @@ struct PetRowView: View {
     }
 }
 
-#Preview {
-    PetsListView()
-        .environmentObject(TaskManager())
-        .environmentObject(PetManager())
-}
+//#Preview {
+//    PetsListView()
+//        .environmentObject(TaskManager())
+//       // .environmentObject(PetManager())
+//        .environmentObject(SettingsManager())
+//
+//}
 

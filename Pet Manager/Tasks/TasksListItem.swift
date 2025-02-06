@@ -7,22 +7,24 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 struct TaskListItemView: View {
-    @ObservedObject var task: MyTask
+    @Bindable var task: TaskItem
+    let pets: [MyPet]
+    let tasks: [TaskItem]
     let isPreview: Bool
 
     var body: some View {
         ZStack {
             if isPreview {
-        
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color.white)
                         .shadow(color: .gray.opacity(20), radius: 2, x: 0, y: 2)
                     
                     HStack {
-                        TaskDetailsLeftView(task: task, isPreview: isPreview)
+                        TaskDetailsLeftView(tasks: tasks, task: task, isPreview: isPreview)
                         Spacer()
                         TaskDetailsRightView(task: task)
                     }
@@ -32,12 +34,13 @@ struct TaskListItemView: View {
                 .padding(.bottom, 10)
                 .padding(.leading, 2)
                 .padding(.trailing, 2)
+               
             }
             
             else {
-                NavigationLink(destination: EditTaskView(task: task)) {
+                NavigationLink(destination: EditTaskView(task: task, pets: pets, tasks: tasks, tempPet: pets[0])) {
                     HStack {
-                        TaskDetailsLeftView(task: task, isPreview: isPreview)
+                        TaskDetailsLeftView(tasks: tasks, task: task, isPreview: isPreview)
                         Spacer()
                         TaskDetailsRightView(task: task)
                     }
@@ -48,34 +51,51 @@ struct TaskListItemView: View {
     }
 }
 
-#Preview {
-  AddTaskView()
-        .environmentObject(TaskManager())
-        .environmentObject(PetManager())
-        .environmentObject(SettingsManager())
-}
+//#Preview {
+//  TasksList()
+//        .environmentObject(TaskManager())
+//        .environmentObject(SettingsManager())
+//}
 
 
 struct TaskDetailsLeftView: View {
-    @EnvironmentObject var taskManager: TaskManager
     
-    @ObservedObject var task: MyTask
+    @EnvironmentObject var taskManager: TaskManager
+    @EnvironmentObject var settingsManager: SettingsManager
+    
+    let tasks: [TaskItem]
+    let task: TaskItem
     let isPreview: Bool
     
     var body: some View {
+
         VStack (alignment: .leading) {
-            Text(task.name)
-                .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(Color.accentColor)
+            ZStack (alignment: .leading)
+            {
+                Text(task.name)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(Color(settingsManager.selectedAccentColor))
+                
+                if task.hasPassedDue && !task.completed && !isPreview {
+                    Image(systemName: "exclamationmark.circle.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundColor(Color.red)
+                        .frame(width: 20)
+                        .offset(x: -20, y: -12)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            Text(task.description)
+            Text(task.descr)
                 .font(.system(size: 18, weight: .regular))
                 .foregroundColor(Color(UIColor.systemGray))
             
             Spacer()
             
             if !isPreview {
-                Button(action: { taskManager.markAsCompleted(task: task) }) {
+                Button(action: { print("TAPPED")
+                    taskManager.markAsCompleted(task: task) }) {
                     Image(systemName: task.deco.taskImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -86,12 +106,14 @@ struct TaskDetailsLeftView: View {
             
         }
         .frame(height: 80)
+
     }
 }
 
 
 struct TaskDetailsRightView: View {
-    @ObservedObject var task: MyTask
+    let task: TaskItem
+    @EnvironmentObject var settingsManager: SettingsManager
     
     var body: some View {
         VStack (alignment: .trailing) {
@@ -105,7 +127,7 @@ struct TaskDetailsRightView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 16)
-                    .foregroundColor(Color.accentColor) 
+                    .foregroundColor(Color(settingsManager.selectedAccentColor))
                 
             }
             
@@ -119,26 +141,24 @@ struct TaskDetailsRightView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 16)
-                    .foregroundColor(Color.accentColor)
-                
-                
+                    .foregroundColor(Color(settingsManager.selectedAccentColor))
             }
             
             HStack {
                 Spacer()
-                Text("\(task.pet.name)")
+                Text("\(task.name)")
                     .font(.system(size: 16, weight: .regular))
                     .foregroundColor(.gray)
                 
-                Image(systemName:  task.completed ? "pawprint.fill" : "pawprint")
+                Image(systemName: task.completed ? "pawprint.fill" : "pawprint")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 14)
-                    .foregroundColor(Color.accentColor)
+                    .foregroundColor(Color(settingsManager.selectedAccentColor))
                 
             }
         }
-        .frame(width: 100, height: 80)
+        .frame(width: 120, height: 80)
     }
 }
 
