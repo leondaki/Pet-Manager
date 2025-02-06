@@ -68,12 +68,12 @@ struct ContentView: View {
                     }
                 }
                 //.animation(.easeInOut, value: selectedTab)
-                Button("delete all") {
-                    for index in 0...tasks.count-1 {
-                        let task = tasks[index]
-                        modelContext.delete(task)
-                    }
-                }
+//                Button("delete all") {
+//                    for index in 0...tasks.count-1 {
+//                        let task = tasks[index]
+//                        modelContext.delete(task)
+//                    }
+//                }
                 .buttonStyle(.borderedProminent)
                 CustomTabBar(selectedTab: $selectedTab)
             }
@@ -93,10 +93,27 @@ struct ContentView: View {
                     }
                 }
 
-                if selectedTab != .settings {
+                if selectedTab == .home && pets.count > 0 {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        HStack {
+                            NavigationLink(destination: AddTaskView(pets: pets, tasks: tasks, tempPet: pets[0]))
+                             {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30)
+                                    .foregroundStyle(Color(settingsManager.selectedAccentColor))
+                                    .background(.clear)
+                            }
+                        }
+                    }
+                }
+                
+                
+                if selectedTab == .pets {
                     ToolbarItem(placement: .topBarTrailing) {
                         HStack {    
-                            NavigationLink(destination: selectedTab == .home ? AnyView(AddTaskView(pets: pets, tasks: tasks, tempPet: pets[0])) : AnyView(AddPetsView(pets: pets)))
+                            NavigationLink(destination: AnyView(AddPetsView(pets: pets)))
                              {
                                 Image(systemName: "plus.circle.fill")
                                     .resizable()
@@ -111,7 +128,6 @@ struct ContentView: View {
             }
             .ignoresSafeArea(edges: .bottom)
         }
-     
         .tint(Color(settingsManager.selectedAccentColor))
     }
    
@@ -126,9 +142,9 @@ struct HomeView:View {
     let tasks: [TaskItem]
     let pets: [MyPet]
     
+   // @State var numUpcoming: Int = 0
+   
     var body: some View {
-        let numTasks = tasks.count
-
         VStack (spacing: 0) {
                 ZStack {
                     Rectangle()
@@ -140,18 +156,26 @@ struct HomeView:View {
                         Text("Hello \(UserDefaults.standard.string(forKey: "username") ?? "")")
                             .font(.system(size: 34, weight: .bold))
                             .foregroundStyle(Color(settingsManager.selectedAccentColor))
+                            .padding(.bottom, 6)
                        
                         HStack (spacing: 0) {
-                            Text("You have ")
-                                .contentTransition(.numericText(value: Double(numTasks)))
+                            Image(systemName: "note.text")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20)
+                                .padding(.trailing, 8)
+
+                            
+                            Text(" You have ")
                                 .font(.system(size: 20, weight: .regular))
                             
-                            Text("\(numTasks) ")
-                                .contentTransition(.numericText(value: Double(numTasks)))
+                            var numUpcoming = tasks.filter{ !$0.completed }.count
+                            Text("\(numUpcoming) ")
+                                .contentTransition(.numericText(value: Double(numUpcoming)))
                                 .font(.system(size: 20, weight: .regular))
-                                .foregroundStyle(Color(settingsManager.selectedAccentColor))
+                                .frame(width: 20)
                             
-                            Text(numTasks == 1 ? "upcoming task.":"upcoming tasks.")
+                            Text(numUpcoming == 1 ? "upcoming task":"upcoming tasks")
                                 .font(.system(size: 20, weight: .regular))
                         }
 
@@ -162,12 +186,52 @@ struct HomeView:View {
                 .zIndex(1)
             
            
-            
-            TasksList(tasks: tasks, pets: pets)
+            if pets.count > 0 {
+                if tasks.count == 0 {
+                    Spacer()
+                    VStack {
+                        Image(systemName: "party.popper.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50)
+                            .foregroundStyle(Color.gray)
+                        
+                        Text("All done for now!")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(Color.gray)
+                            .padding()
+                        
+                    }
+                    Spacer()
+                }
+                else {
+                    TasksList(tasks: tasks, pets: pets)
+                }
+            }
+            else {
+                Spacer()
+                VStack {
+                    Text("Add a pet to create tasks!")
+                        .font(.system(size: 20, weight: .regular))
+                        .padding()
+                    
+                    NavigationLink(destination: AnyView(AddPetsView(pets: pets)))
+                    {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50)
+                            .foregroundStyle(Color(settingsManager.selectedAccentColor))
+                            .background(Circle().fill(.white))
+                    }
                    
+                }
+             
+                Spacer()
+            }
+        
             }
             .background(Color(UIColor.secondarySystemBackground))
-
     }
 }
  

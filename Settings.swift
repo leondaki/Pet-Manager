@@ -16,14 +16,27 @@ class SettingsManager: ObservableObject{
         }
     }
     
+    @Published var selectedLaunchIcon: String {
+        didSet {
+            UserDefaults.standard.set(selectedLaunchIcon, forKey: "selectedLaunchIcon")
+        }
+    }
+    
     init() {
         if let storedColor = UserDefaults.standard.string(forKey: "selectedAccentColor") {
-            print("using stored color: \(storedColor)")
             self.selectedAccentColor = storedColor
         }
         else {
             UserDefaults.standard.set("AccentColorRed", forKey: "selectedAccentColor")
             self.selectedAccentColor = "AccentColorRed"
+        }
+        
+        if let storedLaunchIcon = UserDefaults.standard.string(forKey: "selectedLaunchIcon") {
+            self.selectedLaunchIcon = storedLaunchIcon
+        }
+        else {
+            UserDefaults.standard.set("AccentColorRed", forKey: "selectedLaunchIcon")
+            self.selectedLaunchIcon = "Cat"
         }
     }
 }
@@ -63,6 +76,17 @@ enum AppIcon: String, CaseIterable {
             case .appIconBear: "AccentColorBrown"
             case .appIconSnake: "AccentColorGreen"
             case .appIconRabbit: "AccentColorOrange"
+        }
+    }
+    
+    var launchIcon: String {
+        switch self {
+        case .appIcon: "Cat"
+        case .appIconDog: "Dog"
+        case .appIconFish: "Fish"
+        case .appIconBear: "Bear"
+        case .appIconSnake: "Snake"
+        case .appIconRabbit: "Rabbit"
         }
     }
 }
@@ -167,6 +191,7 @@ struct SettingsView:View {
                                 withAnimation {
                                     currentIcon = UIApplication.shared.alternateIconName
                                     settingsManager.selectedAccentColor = icon.iconColor
+                                    settingsManager.selectedLaunchIcon = icon.launchIcon
                                 }
                             }
                         }

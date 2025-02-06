@@ -17,6 +17,7 @@ struct TasksList:View {
     
     let tasks: [TaskItem]
     let pets: [MyPet]
+   // @Binding var numUpcoming: Int
     @Environment(\.modelContext) private var modelContext
     
     var taskToDeleteName: String {
@@ -32,11 +33,13 @@ struct TasksList:View {
     }
     
     func deleteTask(_ indexSet: IndexSet) {
+
         for index in indexSet {
             let task = tasks[index]
+
             modelContext.delete(task)
         }
-//        
+//
 //        if let indexSet = taskToDeleteIndex, let index = indexSet.first {
 //            let task = tasks[index] // Extract task safely
 //            
@@ -60,13 +63,13 @@ struct TasksList:View {
     
     var body: some View {
         List {
-            if !completedTasks.isEmpty {
+            if !incompletedTasks.isEmpty {
                     Section(header: Text("Upcoming Tasks")
                         .font(.system(size: 18))
                         .listRowInsets(EdgeInsets())
                         .padding(.top, 20).padding(.bottom, 10))
                     {
-                        ForEach(completedTasks, id:\.id) { task in
+                        ForEach(incompletedTasks, id:\.id) { task in
                             TaskListItemView(task: task, pets: pets, tasks: tasks, isPreview: false)
                                 .listRowSeparator(.hidden)
                         }
@@ -75,13 +78,13 @@ struct TasksList:View {
                 }
 
             
-            if !incompletedTasks.isEmpty {
+            if !completedTasks.isEmpty {
                 Section(header: Text("Completed Tasks")
                     .font(.system(size: 18))
                     .listRowInsets(EdgeInsets())
                     .padding(.top, 20).padding(.bottom, 10))
                 {
-                    ForEach(incompletedTasks, id:\.id) { task in
+                    ForEach(completedTasks, id:\.id) { task in
                         TaskListItemView(task: task, pets: pets, tasks: tasks, isPreview: false)
                             .listRowSeparator(.hidden)
                     }
@@ -96,7 +99,7 @@ struct TasksList:View {
        .confirmationDialog("Delete \(taskToDeleteName)?",
                            isPresented: $isConfirmVisible, titleVisibility: .visible) {
            Button("Delete", role: .destructive) {
-               deleteTask(taskToDeleteIndex ?? [])
+                   deleteTask(taskToDeleteIndex ?? [])
             }
            Button("Cancel", role: .cancel) {
                taskToDeleteIndex = nil // Reset selection if canceled

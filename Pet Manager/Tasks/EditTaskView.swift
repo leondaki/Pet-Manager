@@ -9,25 +9,28 @@ import Foundation
 import SwiftUI
 
 struct EditTaskView: View {
-    @Bindable var task: TaskItem
+    let task: TaskItem
     let pets: [MyPet]
     let tasks: [TaskItem]
     @Environment(\.modelContext) private var modelContext
-//    @State var tempTask = TaskItem(id: UUID(),
-//                                   name: "",
-//                                   descr: "Default Pet",
-//                                   dueTime: Date.now.addingTimeInterval(30 * 60),
-//                                   completed: false)
-    
-    @State var tempName = ""
-    @State var tempDescr = ""
-    @State var tempDueTime = Date.now
+
+    @State private var tempName = ""
+    @State private var tempDescr = ""
+    @State private var tempDueTime = Date.now
     @State var tempPet: MyPet
+    
+    var previewTask: PreviewTask {
+        PreviewTask(
+            name: tempName,
+            descr: tempDescr,
+            dueTime: tempDueTime,
+            pet: tempPet
+        )
+    }
     
     @State private var showEditButton: Bool = false
     @FocusState private var isNameFocused: Bool
     @FocusState private var isDescriptionFocused: Bool
-    
 
     @EnvironmentObject var taskManager: TaskManager
     @Environment(\.presentationMode) var presentationMode
@@ -80,7 +83,8 @@ struct EditTaskView: View {
                     .listRowSeparator(.hidden)
                     
                     VStack {
-                        TaskListItemView(task: task, pets: pets, tasks: tasks, isPreview: true)
+                        TaskListItemView(task: previewTask, pets: pets, tasks: tasks, isPreview: true)
+                            .transition(.move(edge: .top).combined(with: .opacity))
                     }
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
@@ -90,6 +94,9 @@ struct EditTaskView: View {
                     VStack {
                         if showEditButton {
                             Button(action : {
+                                // submits current text field input
+                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                
                                 task.name =  tempName
                                 task.descr = tempDescr
                                 task.dueTime = tempDueTime
@@ -138,7 +145,7 @@ struct EditTaskView: View {
                 tempName = task.name
                 tempDescr = task.descr
                 tempDueTime = task.dueTime
-                tempPet = task.pet 
+                tempPet = task.pet ?? MyPet(name: "Unnamed Pet")
             }
             .navigationTitle("Edit Task")
         }
