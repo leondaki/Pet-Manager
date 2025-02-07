@@ -96,12 +96,15 @@ struct AddTaskView: View {
                                 )
           
                                 modelContext.insert(newTask)
-//                                    taskManager.checkNotificationPermission {
-//                                        isAuthorized in
-//                                        if isAuthorized {
-//                                            taskManager.scheduleNotification(for: newTask)
-//                                        }
-//                                    }
+                                
+                                taskManager.checkNotificationPermission {
+                                    isAuthorized in
+                                    if isAuthorized {
+                                        taskManager.scheduleNotification(for: newTask)
+                                    }
+                                }
+                                taskManager.printPendingNotifications()
+                                
                                 presentationMode.wrappedValue.dismiss()
                             }) {
                                 VStack {

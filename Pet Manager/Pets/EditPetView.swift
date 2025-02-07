@@ -39,8 +39,7 @@ struct EditPetView: View {
                     Section(header: Text("Change Pet Name").font(.system(size: 18))) {
                         CustomInputField(text: $tempName, placeholder: "", isFocused: $isFocused, isBgVisible: true)
                             .onChange(of: tempName) {
-                                withAnimation(.easeOut(duration: 0.3)) {
-                                    
+                                withAnimation(.easeOut(duration: 0.3)) {            
                                     showDuplicateAlert = pets.contains(where: { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == tempName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
                                     isButtonVisible = canEditPet()
                                     nameWasChanged = tempName != pet.name
@@ -84,7 +83,7 @@ struct EditPetView: View {
                                 Text("New name is ")
                                     .font(.system(size: 16, weight: .regular))
                                 
-                                Text("\(tempName)")
+                                Text("\(tempName.trimmingCharacters(in: .whitespacesAndNewlines))")
                                     .font(.system(size: 16, weight: .bold))
                                     .foregroundStyle(Color.accentColor)
                             }
@@ -103,7 +102,7 @@ struct EditPetView: View {
                             
                             if canEditPet() {
                                 if let index = pets.firstIndex(where: { $0.name == pet.name }) {
-                                    pets[index].name = tempName
+                                    pets[index].name = tempName.trimmingCharacters(in: .whitespacesAndNewlines)
                                 }
                                 presentationMode.wrappedValue.dismiss()
                             }

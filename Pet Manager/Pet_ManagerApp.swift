@@ -16,6 +16,8 @@ struct Pet_ManagerApp: App {
     
     @State private var showSplash = true
     
+    // check if user toggle system notifs on when returning to app
+    
     var body: some Scene {
         WindowGroup {
             ZStack {

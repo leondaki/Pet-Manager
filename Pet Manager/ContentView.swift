@@ -79,18 +79,10 @@ struct ContentView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    HStack {
-                        Image(systemName: "pawprint.circle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 24)
-                            .foregroundColor(Color.gray)
-                        
                         Text("Pet Manager")
                             .font(.system(size: 24, weight: .regular))
                             .foregroundStyle(Color.gray)
-                          
-                    }
+                
                 }
 
                 if selectedTab == .home && pets.count > 0 {
@@ -164,18 +156,16 @@ struct HomeView:View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 20)
                                 .padding(.trailing, 8)
-
-                            
-                            Text(" You have ")
+ 
+                            Text("You have ")
                                 .font(.system(size: 20, weight: .regular))
                             
-                            var numUpcoming = tasks.filter{ !$0.completed }.count
-                            Text("\(numUpcoming) ")
+                            let numUpcoming = tasks.filter{ !$0.completed }.count
+                            Text("\(numUpcoming)")
                                 .contentTransition(.numericText(value: Double(numUpcoming)))
                                 .font(.system(size: 20, weight: .regular))
-                                .frame(width: 20)
                             
-                            Text(numUpcoming == 1 ? "upcoming task":"upcoming tasks")
+                            Text(numUpcoming == 1 ? " upcoming task":" upcoming tasks")
                                 .font(.system(size: 20, weight: .regular))
                         }
 
@@ -187,26 +177,7 @@ struct HomeView:View {
             
            
             if pets.count > 0 {
-                if tasks.count == 0 {
-                    Spacer()
-                    VStack {
-                        Image(systemName: "party.popper.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 50)
-                            .foregroundStyle(Color.gray)
-                        
-                        Text("All done for now!")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(Color.gray)
-                            .padding()
-                        
-                    }
-                    Spacer()
-                }
-                else {
-                    TasksList(tasks: tasks, pets: pets)
-                }
+                TasksList(tasks: tasks, pets: pets)
             }
             else {
                 Spacer()

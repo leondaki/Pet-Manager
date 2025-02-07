@@ -34,10 +34,18 @@ struct PetsListView: View {
                     .frame(height: 110)
                     .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
                     .overlay {
-                        VStack (alignment: .leading)  {
+                        VStack (alignment: .leading, spacing: 0)  {
                             Text("Pets")
                                 .font(.system(size: 34, weight: .bold))
+                                .padding(.bottom, 6)
+                            
                             HStack (spacing: 0) {
+                                Image(systemName: "pawprint.fill")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20)
+                                    .padding(.trailing, 8)
+                                
                                 Text("You have ")
                                     .font(.system(size: 20, weight: .regular))
                                 
@@ -45,9 +53,8 @@ struct PetsListView: View {
                                     .contentTransition(.numericText(value: Double(pets.count)))
                                     .animation(.easeOut, value: pets.count)
                                     .font(.system(size: 20, weight: .regular))
-                                    .foregroundStyle( Color(settingsManager.selectedAccentColor))
                                 
-                                Text(pets.count == 1 ? " pet." : " pets.")
+                                Text(pets.count == 1 ? " pet" : " pets")
                                     .font(.system(size: 20, weight: .regular))
                             }
                         }

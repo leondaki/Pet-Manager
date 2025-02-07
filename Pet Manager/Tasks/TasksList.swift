@@ -63,6 +63,22 @@ struct TasksList:View {
     
     var body: some View {
         List {
+            if tasks.filter({ !$0.completed }).count == 0 {
+                HStack {
+                    Image(systemName: "party.popper.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 40)
+                        .foregroundStyle(Color.gray)
+                    
+                    Text("All done for now!")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(Color.gray)
+                        .padding()
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+            }
+                
             if !incompletedTasks.isEmpty {
                     Section(header: Text("Upcoming Tasks")
                         .font(.system(size: 18))

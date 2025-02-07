@@ -39,7 +39,133 @@ class SettingsManager: ObservableObject{
             self.selectedLaunchIcon = "Cat"
         }
     }
+      
+    
+    @AppStorage("notificationsEnabled") var notificationsEnabled = false
+    
+    func openAppSettings() {
+        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+        }
+    }
 }
+
+
+
+struct SettingsView:View {
+    @FocusState private var isNameFocused: Bool
+    @State private var currentIcon: String? = UIApplication.shared.alternateIconName
+   
+    @AppStorage("username") var username: String = ""
+
+    @EnvironmentObject var settingsManager: SettingsManager
+    @EnvironmentObject var taskManager: TaskManager
+    
+    var body: some View {
+        VStack (spacing: 0) {
+            Rectangle()
+                .fill(Color(UIColor.systemBackground))
+                .frame(height: 110)
+                .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
+                .zIndex(1)
+                .overlay {
+                    VStack (alignment: .leading)  {
+                        Text("Settings")
+                            .font(.system(size: 34, weight: .bold))
+                        + Text("\n")
+                            .font(.system(size: 20, weight: .bold))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 20)
+                    
+                }
+            
+            Form {
+                Section(header: Text("Username")
+                    .font(.system(size: 18))
+                    .listRowInsets(EdgeInsets())
+                    .padding(.top, 30).padding(.bottom, 10)) {
+                    CustomInputField(
+                        text: $username,
+                        placeholder: "Enter Your Name",
+                        isFocused: $isNameFocused,
+                        isBgVisible: false
+                    )
+                    .padding(.top, 10)
+                    .padding(.bottom, 10)
+                }
+               
+                Section(header: Text("Notifications")
+                    .font(.system(size: 18))
+                    .listRowInsets(EdgeInsets())
+                    .padding(.top, 10)
+                    .padding(.bottom, 10)) {
+                        Toggle("Enable Notifications", isOn: $settingsManager.notificationsEnabled)
+                            .onChange(of: settingsManager.notificationsEnabled) { _, newValue in
+                                    if newValue {
+                                        // check system level notification permission
+                                        taskManager.checkNotificationPermission {
+                                            isAuthorized in
+                                            if isAuthorized {
+                                                settingsManager.notificationsEnabled  = true
+                                            }
+                                        }
+                                    } else {
+                                        // cancels all current scheduled notifications
+                                        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                                    }
+                                }
+                            }
+                
+                Section(header: Text("App Theme").font(.system(size: 18))
+                    .listRowInsets(EdgeInsets())
+                    .padding(.top, 10)
+                    .padding(.bottom, 10)) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))], spacing: 40)
+                    {
+                        ForEach(AppIcon.allCases, id:\.self) { icon in
+                            HStack {
+                                Image(icon.previewImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 80)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    .shadow(color: Color.gray.opacity(0.3), radius: 2, y: 2)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .stroke(currentIcon == icon.iconValue ? Color.gray : Color.clear, lineWidth: 3)
+                                            .padding(-6)
+                                    )
+                                
+                            }
+                            .onTapGesture {
+                                UIApplication.shared.setAlternateIconName(icon.iconValue)
+                            
+                                withAnimation {
+                                    currentIcon = UIApplication.shared.alternateIconName
+                                    settingsManager.selectedAccentColor = icon.iconColor
+                                    settingsManager.selectedLaunchIcon = icon.launchIcon
+                                }
+                            }
+                        }
+                    }
+                    .padding(.top, 20)
+                    .padding(.bottom, 20)
+                }
+            }
+            
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in //settingsManager.checkNotificationStatus()
+        }
+       
+    }
+}
+
+//#Preview {
+//    SettingsView()
+//        .environmentObject(TaskManager(tasks:))
+//        .environmentObject(SettingsManager())
+//}
 
 enum AppIcon: String, CaseIterable {
     case appIcon = "Default"
@@ -90,124 +216,3 @@ enum AppIcon: String, CaseIterable {
         }
     }
 }
-
-struct SettingsView:View {
-    //@EnvironmentObject var settingsManager: SettingsManager
-    
-    @FocusState private var isNameFocused: Bool
-    @State private var currentIcon: String? = UIApplication.shared.alternateIconName
-   
-    @AppStorage("notificationsEnabled") private var notificationsEnabled = false
-    @AppStorage("username") var username: String = ""
-
-    @EnvironmentObject var settingsManager: SettingsManager
-    
-    private func requestNotificationPermission() {
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-                DispatchQueue.main.async {
-                    notificationsEnabled = granted
-                    if !granted {
-                        // Handle denied permissions gracefully
-                        print("Notifications permission denied.")
-                    }
-                }
-            }
-    }
-    
-    var body: some View {
-        VStack (spacing: 0) {
-            Rectangle()
-                .fill(Color(UIColor.systemBackground))
-                .frame(height: 110)
-                .shadow(color: Color.gray.opacity(0.2), radius: 1, y: 3)
-                .zIndex(1)
-                .overlay {
-                    VStack (alignment: .leading)  {
-                        Text("Settings")
-                            .font(.system(size: 34, weight: .bold))
-                        + Text("\n")
-                            .font(.system(size: 20, weight: .bold))
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 20)
-                    
-                }
-            
-            Form {
-                Section(header: Text("Username")
-                    .font(.system(size: 18))
-                    .listRowInsets(EdgeInsets())
-                    .padding(.top, 30).padding(.bottom, 10)) {
-                    CustomInputField(
-                        text: $username,
-                        placeholder: "Enter Your Name",
-                        isFocused: $isNameFocused,
-                        isBgVisible: false
-                    )
-                    .padding(.top, 10)
-                    .padding(.bottom, 10)
-                }
-               
-
-                Section(header: Text("Notifications")
-                    .font(.system(size: 18))
-                    .listRowInsets(EdgeInsets())
-                    .padding(.top, 10)
-                    .padding(.bottom, 10)) {
-                                Toggle("Enable Notifications", isOn: $notificationsEnabled)
-                                .onChange(of: notificationsEnabled) { _, newValue in
-                                    if newValue {
-                                        requestNotificationPermission()
-                                    } else {
-                                        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-                                    }
-                                }
-                            }
-                
-                Section(header: Text("App Theme").font(.system(size: 18))
-                    .listRowInsets(EdgeInsets())
-                    .padding(.top, 10)
-                    .padding(.bottom, 10)) {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))], spacing: 40)
-                    {
-                        ForEach(AppIcon.allCases, id:\.self) { icon in
-                            HStack {
-                                Image(icon.previewImage)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 80)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .shadow(color: Color.gray.opacity(0.3), radius: 2, y: 2)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 14)
-                                            .stroke(currentIcon == icon.iconValue ? Color.gray : Color.clear, lineWidth: 3)
-                                            .padding(-6)
-                                    )
-                                
-                            }
-                            .onTapGesture {
-                                UIApplication.shared.setAlternateIconName(icon.iconValue)
-                            
-                                withAnimation {
-                                    currentIcon = UIApplication.shared.alternateIconName
-                                    settingsManager.selectedAccentColor = icon.iconColor
-                                    settingsManager.selectedLaunchIcon = icon.launchIcon
-                                }
-                            }
-                        }
-                    }
-                    .padding(.top, 20)
-                    .padding(.bottom, 20)
-                }
-            }
-            
-        }
-       
-    }
-}
-
-//#Preview {
-//    SettingsView()
-//        .environmentObject(TaskManager(tasks:))
-//        .environmentObject(SettingsManager())
-//}

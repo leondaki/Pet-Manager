@@ -73,7 +73,7 @@ struct AddPetsView: View {
                                 Text("Will be added as ")
                                     .font(.system(size: 16, weight: .regular))
                                 
-                                Text("\(name)")
+                                Text("\(name.trimmingCharacters(in: .whitespacesAndNewlines))")
                                     .font(.system(size: 16, weight: .bold))
                                     .foregroundStyle(Color.accentColor)
                             }
@@ -91,7 +91,7 @@ struct AddPetsView: View {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         
                       if canAddPet() {
-                           let newPet = MyPet(name: name)
+                           let newPet = MyPet(name: name.trimmingCharacters(in: .whitespacesAndNewlines))
                            modelContext.insert(newPet)
                            presentationMode.wrappedValue.dismiss()
                       }

@@ -11,7 +11,6 @@ import UserNotifications
 import SwiftData
 
 class TaskManager: ObservableObject {
-    
     func markAsCompleted(task: TaskItem) {
         withAnimation {
             task.completed.toggle()
@@ -21,11 +20,28 @@ class TaskManager: ObservableObject {
         generator.impactOccurred()
     }
     
+    func printPendingNotifications() {
+        print("Pending Notifications:\n")
+        UNUserNotificationCenter.current().getPendingNotificationRequests(completionHandler: { requests in
+            for request in requests {
+                print("Notification ID: \(request.identifier)")
+                print("Title: \(request.content.title)")
+                print("Body: \(request.content.body)")
+                print("Trigger: \(String(describing: request.trigger))\n")
+            }
+        })
+    }
+    
     func checkNotificationPermission(completion: @escaping (Bool) -> Void)  {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             DispatchQueue.main.async {
+                print("checking notification permissions...")
                 if settings.authorizationStatus == .authorized {
+                    print("authorized for notifs.")
                     completion(true)
+                }
+                else {
+                    print("! NOT authorized for notifs!")
                 }
             }
         }
@@ -67,12 +83,17 @@ class TaskManager: ObservableObject {
     func updateNotification(for task: TaskItem) {
         deleteNotification(for: task)
         scheduleNotification(for: task)
+        
+        print("Updated Notifcations:")
+        printPendingNotifications()
     }
     
     func deleteNotification(for task: TaskItem) {
         let notificationID = task.id.uuidString
         
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationID])   
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationID])
+        print("Notifcations after Delete:")
+        printPendingNotifications()
     }
 
 }
