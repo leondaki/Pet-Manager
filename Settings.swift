@@ -67,7 +67,7 @@ class SettingsManager: ObservableObject{
 
 
 struct SettingsView:View {
-    @FocusState private var isNameFocused: Bool
+    @FocusState private var focusedField: Field?
     @State private var currentIcon: String? = UIApplication.shared.alternateIconName
    
     @AppStorage("username") var username: String = ""
@@ -107,9 +107,10 @@ struct SettingsView:View {
                     CustomInputField(
                         text: $username,
                         placeholder: "Enter Your Name",
-                        isFocused: $isNameFocused,
+                        isFocused: focusedField == .name,
                         isBgVisible: false
                     )
+                    .focused($focusedField, equals: .name)
                     .padding(.top, 10)
                     .padding(.bottom, 10)
                 }
@@ -198,6 +199,7 @@ struct SettingsView:View {
             }
             
         }
+        .onTapGesture { focusedField = nil }
         .onAppear {
             // set enable notification toggle to match system notification settings
             taskManager.checkNotificationPermission { isAuthorized in

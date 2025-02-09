@@ -146,7 +146,7 @@ struct PetsList:View {
             }
             
         }
-        .listRowSpacing(20)
+        .listRowSpacing(16)
         .animation(.easeInOut, value: petDeleted)
         .confirmationDialog("This will also delete all tasks for \(petToDeleteName).",
                             isPresented: $isConfirmVisible, titleVisibility: .visible) {

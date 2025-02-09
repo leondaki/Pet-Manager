@@ -144,6 +144,7 @@ struct HomeView:View {
                             .font(.system(size: 34, weight: .bold))
                             .foregroundStyle(Color(settingsManager.selectedAccentColor))
                             .padding(.bottom, 6)
+                            .lineLimit(1)
                        
                         HStack (spacing: 0) {
                             Image(systemName: "note.text")

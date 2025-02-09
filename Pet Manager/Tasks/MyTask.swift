@@ -17,6 +17,7 @@ protocol TaskType {
     var completed: Bool { get }
     var dateCompletedAt: Date? { get }
     var pet: MyPet? { get }
+    var notificationTimeRawValue: String { get }
 }
 
 struct PreviewTask: TaskType {
@@ -27,9 +28,15 @@ struct PreviewTask: TaskType {
     var completed: Bool = false
     var dateCompletedAt: Date?
     var pet: MyPet? = nil
+    var notificationTimeRawValue: String = "At time of event"
 }
 
 extension TaskItem {
+    var notificationTime: NotificationTime {
+         get { NotificationTime(rawValue: notificationTimeRawValue) ?? .atEvent }
+         set { notificationTimeRawValue = newValue.rawValue }
+     }
+    
     var hasPassedDue: Bool {
         return Date() > dueTime
     }
@@ -56,6 +63,7 @@ class TaskItem: TaskType {
     var completed: Bool
     var dateCompletedAt: Date? = nil
     var pet: MyPet? = nil
+    var notificationTimeRawValue: String = "5 minutes before"
 
     init (
         id: UUID = UUID(),
@@ -64,7 +72,8 @@ class TaskItem: TaskType {
         dueTime: Date,
         completed: Bool,
         dateCompletedAt: Date? = nil,
-        pet: MyPet? = nil
+        pet: MyPet? = nil,
+        notificationTimeRawValue: String = "5 minutes before"
     ) {
         self.id = id
         self.name = name
@@ -73,5 +82,6 @@ class TaskItem: TaskType {
         self.completed = completed
         self.dateCompletedAt = dateCompletedAt
         self.pet = pet
+        self.notificationTimeRawValue = notificationTimeRawValue
     }
 }

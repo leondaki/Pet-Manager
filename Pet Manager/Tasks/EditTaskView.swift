@@ -18,6 +18,7 @@ struct EditTaskView: View {
     @State private var tempDescr = ""
     @State private var tempDueTime = Date.now
     @State var tempPet: MyPet
+    @State private var selectedNotificationTime: NotificationTime = .fiveMinutes
     
     var previewTask: PreviewTask {
         PreviewTask(
@@ -29,8 +30,8 @@ struct EditTaskView: View {
     }
     
     @State private var showEditButton: Bool = false
-    @FocusState private var isNameFocused: Bool
-    @FocusState private var isDescriptionFocused: Bool
+   
+    @FocusState private var focusedField: Field?
 
     @EnvironmentObject var taskManager: TaskManager
     @EnvironmentObject var settingsManager: SettingsManager
@@ -44,23 +45,35 @@ struct EditTaskView: View {
                         CustomInputField (
                             text: $tempName,
                             placeholder: "Task Name",
-                            isFocused: $isNameFocused, isBgVisible: false)
-                            .onAppear { isNameFocused = true }
+                            isFocused: focusedField == .name,
+                            isBgVisible: false,
+                            characterLimit: 20)
+                        .focused($focusedField, equals: .name)
+                        .onAppear { focusedField = .name }
                             .onChange(of: tempName) {
                                 withAnimation {
                                     showEditButton = tempName != task.name && !tempName.isEmpty }
                             }
                             .padding(.top, 10)
                         
-                        CustomInputField(
-                            text: $tempDescr,
-                            placeholder: "Task Description",
-                            isFocused: $isDescriptionFocused,
-                            isBgVisible: false)
+                        CustomTextEditor(
+                            isFocused: focusedField == .description,
+                            text: $tempDescr)
+                        .focused($focusedField, equals: .description)
                         .onChange(of: tempDescr) {
                             withAnimation {
                                 showEditButton = tempDescr != task.descr }
                         }
+                        
+//                        CustomInputField(
+//                            text: $tempDescr,
+//                            placeholder: "Task Description",
+//                            isFocused: focusedField == .description,
+//                            isBgVisible: false)
+//                        .onChange(of: tempDescr) {
+//                            withAnimation {
+//                                showEditButton = tempDescr != task.descr }
+//                        }
                         
                         Picker("Select Pet", selection: $tempPet) {
                             ForEach(pets) {pet in
@@ -79,6 +92,17 @@ struct EditTaskView: View {
                                 withAnimation {
                                     showEditButton = tempDueTime != task.dueTime }
                             }
+                        
+                        Picker("Notify Me", selection: $selectedNotificationTime) {
+                            ForEach(NotificationTime.allCases, id:\.self) { time in
+                                Text(time.rawValue).tag(time)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .onChange(of: selectedNotificationTime) {
+                            withAnimation {
+                                showEditButton = selectedNotificationTime != task.notificationTime }
+                        }
                         
                     }
                     .listRowSeparator(.hidden)
@@ -102,6 +126,7 @@ struct EditTaskView: View {
                                 task.descr = tempDescr
                                 task.dueTime = tempDueTime
                                 task.pet = tempPet
+                                task.notificationTimeRawValue = selectedNotificationTime.rawValue
                                 
                                 do {
                                     try modelContext.save()
@@ -112,7 +137,6 @@ struct EditTaskView: View {
                                 // update task notification
                                 if settingsManager.notificationsEnabled {
                                     taskManager.updateNotification(for: task)
-                                    taskManager.printPendingNotifications()
                                 }
                                 
                                 presentationMode.wrappedValue.dismiss()
@@ -144,6 +168,7 @@ struct EditTaskView: View {
                 tempDescr = task.descr
                 tempDueTime = task.dueTime
                 tempPet = task.pet ?? MyPet(name: "Unnamed Pet")
+                selectedNotificationTime = task.notificationTime
             }
             .navigationTitle("Edit Task")
         }

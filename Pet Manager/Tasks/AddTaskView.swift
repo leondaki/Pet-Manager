@@ -9,6 +9,10 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+enum Field: Hashable {
+     case name, description
+ } 
+
 struct AddTaskView: View {
     @State private var isButtonVisible: Bool = false
     @State private var isButtonEnabled: Bool = false
@@ -20,7 +24,8 @@ struct AddTaskView: View {
     @State private var tempDescr = ""
     @State private var tempDueTime = Date.now
     @State var tempPet: MyPet
-
+    @State private var selectedNotificationTime: NotificationTime = .fiveMinutes
+    
     var previewTask: PreviewTask {
         PreviewTask(
             name: tempName,
@@ -36,8 +41,8 @@ struct AddTaskView: View {
     @Environment(\.modelContext) var modelContext
     
     @State private var showDetails = false
-    @FocusState private var isNameFocused: Bool
-    @FocusState private var isDescriptionFocused: Bool
+    
+    @FocusState private var focusedField: Field?
 
     var body: some View {
         GeometryReader { geometry in
@@ -47,23 +52,25 @@ struct AddTaskView: View {
                         CustomInputField(
                             text: $tempName,
                             placeholder: "Task Name",
-                            isFocused: $isNameFocused,
-                            isBgVisible: false)
+                            isFocused: focusedField == .name,
+                            isBgVisible: false,
+                            characterLimit: 20)
                         .onChange(of: tempName.isEmpty) {
                             isButtonEnabled.toggle()
                             withAnimation(.easeOut(duration: 0.4)) {
                                 isButtonVisible.toggle()
                             }
                         }
-                        .onAppear { isNameFocused = true }
+                        .onAppear { focusedField = .name }
                         .padding(.top, 10)
-                        
-                        CustomInputField(
-                            text: $tempDescr,
-                            placeholder: "Task Description",
-                            isFocused: $isDescriptionFocused,
-                            isBgVisible: false)
-                        
+                        .focused($focusedField, equals: .name)
+                         
+                        CustomTextEditor(
+                            isFocused: focusedField == .description,
+                            text: $tempDescr)
+                        .focused($focusedField, equals: .description)
+                        .border(.red, width: 2)
+                   
                         Picker("Select Pet", selection: $tempPet) {
                             ForEach(pets) {pet in
                                 Text(pet.name).tag(pet)
@@ -73,6 +80,13 @@ struct AddTaskView: View {
                         
                         DatePicker("Due Date", selection: $tempDueTime, displayedComponents: [.date, .hourAndMinute])
                             .padding(.bottom, 10)
+                        
+                        Picker("Notify Me", selection: $selectedNotificationTime) {
+                            ForEach(NotificationTime.allCases, id:\.self) { time in 
+                                Text(time.rawValue).tag(time)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
                         
                     }
                     .listRowSeparator(.hidden)
@@ -93,7 +107,8 @@ struct AddTaskView: View {
                                     descr: tempDescr,
                                     dueTime: tempDueTime,
                                     completed: false,
-                                    pet: tempPet
+                                    pet: tempPet,
+                                    notificationTimeRawValue: selectedNotificationTime.rawValue
                                 )
           
                                 modelContext.insert(newTask)
@@ -101,7 +116,6 @@ struct AddTaskView: View {
                                 // add task notification
                                 if settingsManager.notificationsEnabled {
                                     taskManager.scheduleNotification(for: newTask)
-                                    taskManager.printPendingNotifications()
                                 }
                                 
                                 presentationMode.wrappedValue.dismiss()

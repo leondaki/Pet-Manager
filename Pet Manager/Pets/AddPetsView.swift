@@ -19,7 +19,7 @@ struct AddPetsView: View {
     @State private var showDuplicateAlert: Bool = false
     @State private var isButtonVisible: Bool = false
     
-    @FocusState private var isFocused: Bool
+    @FocusState private var focusedField: Field?
 
     func canAddPet() -> Bool {
         let isDuplicate = pets.contains(where: { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
@@ -34,14 +34,15 @@ struct AddPetsView: View {
             VStack (spacing: 0) { 
                 Form {
                     Section(header: Text("Pet Name").font(.system(size: 18))) {
-                        CustomInputField(text: $name, placeholder: "Name", isFocused: $isFocused, isBgVisible: true)
+                        CustomInputField(text: $name, placeholder: "Name", isFocused: focusedField == .name, isBgVisible: true)
+                            .onAppear { focusedField = .name }
+                            .focused($focusedField, equals: .name)
                             .onChange(of: name) {
                                 withAnimation(.easeOut(duration: 0.3)) {
                                     showDuplicateAlert = pets.contains(where: { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
                                     isButtonVisible = canAddPet()
                                 }
                             }
-                            .onAppear { isFocused = true }
                             .padding(.top, 10)
                             .padding(.bottom, 10)
                  

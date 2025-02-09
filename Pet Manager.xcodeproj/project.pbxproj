@@ -12,6 +12,7 @@
 		C731E86B2D53EA0C006F8AE0 /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C731E86A2D53EA0C006F8AE0 /* PreviewContainer.swift */; };
 		C731E86D2D554836006F8AE0 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C731E86C2D554835006F8AE0 /* Launch Screen.storyboard */; };
 		C731E86F2D554EE6006F8AE0 /* LaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C731E86E2D554EE6006F8AE0 /* LaunchScreen.swift */; };
+		C78F45952D592C6500700A8A /* CustomTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C78F45942D592C6500700A8A /* CustomTextEditor.swift */; };
 		C7B657DE2D348D7A00AFA8A2 /* Pet_ManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B657DD2D348D7A00AFA8A2 /* Pet_ManagerApp.swift */; };
 		C7B657E02D348D7A00AFA8A2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B657DF2D348D7A00AFA8A2 /* ContentView.swift */; };
 		C7B657E22D348D7C00AFA8A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7B657E12D348D7C00AFA8A2 /* Assets.xcassets */; };
@@ -38,6 +39,7 @@
 		C731E86A2D53EA0C006F8AE0 /* PreviewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContainer.swift; sourceTree = "<group>"; };
 		C731E86C2D554835006F8AE0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		C731E86E2D554EE6006F8AE0 /* LaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreen.swift; sourceTree = "<group>"; };
+		C78F45942D592C6500700A8A /* CustomTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextEditor.swift; sourceTree = "<group>"; };
 		C7B657DA2D348D7A00AFA8A2 /* Pet Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pet Manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7B657DD2D348D7A00AFA8A2 /* Pet_ManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pet_ManagerApp.swift; sourceTree = "<group>"; };
 		C7B657DF2D348D7A00AFA8A2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 				C7B657DD2D348D7A00AFA8A2 /* Pet_ManagerApp.swift */,
 				C7B657DF2D348D7A00AFA8A2 /* ContentView.swift */,
 				C7B658072D4585C000AFA8A2 /* CustomTextField.swift */,
+				C78F45942D592C6500700A8A /* CustomTextEditor.swift */,
 				C7B657E12D348D7C00AFA8A2 /* Assets.xcassets */,
 				C7B657E32D348D7C00AFA8A2 /* Preview Content */,
 			);
@@ -235,6 +238,7 @@
 				C7B657FE2D42DB8B00AFA8A2 /* TasksListItem.swift in Sources */,
 				C7B657E02D348D7A00AFA8A2 /* ContentView.swift in Sources */,
 				C7B658042D4342FE00AFA8A2 /* CustomTabBar.swift in Sources */,
+				C78F45952D592C6500700A8A /* CustomTextEditor.swift in Sources */,
 				C7B657FA2D37174700AFA8A2 /* MyPets.swift in Sources */,
 				C718AE3D2D57182F00091D43 /* test.swift in Sources */,
 				C7B658082D4585C100AFA8A2 /* CustomTextField.swift in Sources */,

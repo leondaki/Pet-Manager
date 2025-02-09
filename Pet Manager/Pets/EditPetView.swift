@@ -18,7 +18,7 @@ struct EditPetView: View {
     @State private var showDuplicateAlert: Bool = false
     @State private var nameWasChanged: Bool = false
     
-    @FocusState private var isFocused: Bool
+    @FocusState private var focusedField: Field?
     
     @EnvironmentObject var taskManager: TaskManager
     @Environment(\.presentationMode) var presentationMode
@@ -37,7 +37,9 @@ struct EditPetView: View {
             VStack (spacing: 0) {
                 Form {
                     Section(header: Text("Change Pet Name").font(.system(size: 18))) {
-                        CustomInputField(text: $tempName, placeholder: "", isFocused: $isFocused, isBgVisible: true)
+                        CustomInputField(text: $tempName, placeholder: "", isFocused: focusedField == .name, isBgVisible: true)
+                            .onAppear { focusedField = .name }
+                            .focused($focusedField, equals: .name)
                             .onChange(of: tempName) {
                                 withAnimation(.easeOut(duration: 0.3)) {            
                                     showDuplicateAlert = pets.contains(where: { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == tempName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
@@ -45,7 +47,6 @@ struct EditPetView: View {
                                     nameWasChanged = tempName != pet.name
                                 }
                             }
-                            .onAppear { isFocused = true }
                             .padding(.top, 10)
                             .padding(.bottom, 10)
                     }
