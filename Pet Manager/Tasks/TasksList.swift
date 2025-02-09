@@ -13,45 +13,39 @@ struct TasksList:View {
     @EnvironmentObject var taskManager: TaskManager
     
     @State private var isConfirmVisible: Bool = false
-    @State private var taskToDeleteIndex: IndexSet?
+    @State private var taskToDelete: TaskItem?
     
-    let tasks: [TaskItem]
+    var tasks: [TaskItem]
     let pets: [MyPet]
-   // @Binding var numUpcoming: Int
+
     @Environment(\.modelContext) private var modelContext
     
     var taskToDeleteName: String {
-        if let index = taskToDeleteIndex?.first {
-            return tasks[index].name
+        if let task = taskToDelete {
+            return task.name
         }
         return "this task"
     }
     
-    private func confirmDelete(at offsets: IndexSet) {
-        taskToDeleteIndex = offsets
+    private func confirmDelete(task: TaskItem) {
+        taskToDelete = task
         isConfirmVisible = true
     }
     
-    func deleteTask(_ indexSet: IndexSet) {
-
-        for index in indexSet {
-            let task = tasks[index]
-
-            modelContext.delete(task)
-        }
-//
-//        if let indexSet = taskToDeleteIndex, let index = indexSet.first {
-//            let task = tasks[index] // Extract task safely
-//            
-//            //taskManager.deleteNotification(for: task) // Remove notification
-//            
-//            modelContext.delete(task) // Remove task from list
-//        }
-//        
-//        print("Stored color: \(UserDefaults.standard.string(forKey: "selectedAccentColor") ?? "default")")
-        
-        taskToDeleteIndex = nil // Reset after deletion
+    // used to trigger task deletion animation
+    @State private var deletedTask: Bool = false
+    
+    func deleteTask(task: TaskItem?) {
+      if let taskToDelete = task {
+          withAnimation {
+              deletedTask = true
+              modelContext.delete(taskToDelete)
+              taskManager.deleteNotification(for: taskToDelete)
+          }
+         deletedTask = false
+      }
     }
+
                  
     var completedTasks: [TaskItem] {
         return tasks.filter{ $0.completed }
@@ -88,8 +82,18 @@ struct TasksList:View {
                         ForEach(incompletedTasks, id:\.id) { task in
                             TaskListItemView(task: task, pets: pets, tasks: tasks, isPreview: false)
                                 .listRowSeparator(.hidden)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button(action: {
+                                            confirmDelete(task: task)
+                                        }, label: {
+                                            Image(systemName: "trash.fill")
+                                                .tint(Color.red)
+                                        }
+                                        )
+                                    }
+                            
+                                
                         }
-                        .onDelete(perform: confirmDelete)
                     }
                 }
 
@@ -103,22 +107,29 @@ struct TasksList:View {
                     ForEach(completedTasks, id:\.id) { task in
                         TaskListItemView(task: task, pets: pets, tasks: tasks, isPreview: false)
                             .listRowSeparator(.hidden)
-                    }
-                    .onDelete(perform: confirmDelete)
-                   
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(action: {
+                                        confirmDelete(task: task)
+                                    }, label: {
+                                        Image(systemName: "trash.fill")
+                                            .tint(Color.red)
+                                    })
+                                }
+                        }
                 }
+           
             }
         }
-       .animation(.easeInOut, value: tasks)
+        .animation(.easeInOut, value: deletedTask)
        .listRowInsets(EdgeInsets())
        .listRowSpacing(16)
        .confirmationDialog("Delete \(taskToDeleteName)?",
                            isPresented: $isConfirmVisible, titleVisibility: .visible) {
            Button("Delete", role: .destructive) {
-                   deleteTask(taskToDeleteIndex ?? [])
+               deleteTask(task: taskToDelete ?? nil)
             }
            Button("Cancel", role: .cancel) {
-               taskToDeleteIndex = nil // Reset selection if canceled
+              taskToDelete = nil
            }
         }
     }

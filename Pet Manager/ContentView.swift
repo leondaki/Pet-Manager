@@ -37,8 +37,8 @@ struct ContentView: View {
     @State var selectedTab: Tab = .home
     @EnvironmentObject var settingsManager: SettingsManager
     
-    @Query(sort: \MyPet.name) private var pets: [MyPet]
-    @Query(sort: \TaskItem.dueTime) private var tasks: [TaskItem]
+    @Query(sort: \MyPet.name, animation: .default) private var pets: [MyPet]
+    @Query(sort: \TaskItem.dueTime, animation: .default) private var tasks: [TaskItem]
     @Environment(\.modelContext) var modelContext: ModelContext
     
     init() {
@@ -53,28 +53,23 @@ struct ContentView: View {
     }
     
     var body: some View {
-        NavigationStack {
+      NavigationStack {
             VStack (spacing: 0) {
+
                 ZStack {
                     switch selectedTab {
                         case .home :
                             HomeView(tasks: tasks, pets: pets)
-                               
+                                  
                         case .pets:
                             PetsListView(pets: pets)
                                
                         case .settings:
-                            SettingsView()
+                            SettingsView(tasks: tasks)
                     }
+
                 }
-                //.animation(.easeInOut, value: selectedTab)
-//                Button("delete all") {
-//                    for index in 0...tasks.count-1 {
-//                        let task = tasks[index]
-//                        modelContext.delete(task)
-//                    }
-//                }
-                .buttonStyle(.borderedProminent)
+
                 CustomTabBar(selectedTab: $selectedTab)
             }
             .toolbar {
@@ -120,7 +115,7 @@ struct ContentView: View {
             }
             .ignoresSafeArea(edges: .bottom)
         }
-        .tint(Color(settingsManager.selectedAccentColor))
+     .tint(Color(settingsManager.selectedAccentColor))
     }
    
 }
@@ -163,6 +158,7 @@ struct HomeView:View {
                             let numUpcoming = tasks.filter{ !$0.completed }.count
                             Text("\(numUpcoming)")
                                 .contentTransition(.numericText(value: Double(numUpcoming)))
+                                .animation(.easeInOut, value: tasks)
                                 .font(.system(size: 20, weight: .regular))
                             
                             Text(numUpcoming == 1 ? " upcoming task":" upcoming tasks")

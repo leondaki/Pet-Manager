@@ -11,7 +11,7 @@ import UserNotifications
 import SwiftData
 
 class TaskManager: ObservableObject {
-    func markAsCompleted(task: TaskItem) {
+    func toggleCompleted(task: TaskItem) {
         withAnimation {
             task.completed.toggle()
         }
@@ -42,6 +42,7 @@ class TaskManager: ObservableObject {
                 }
                 else {
                     print("! NOT authorized for notifs!")
+                    completion(false)
                 }
             }
         }
@@ -56,8 +57,8 @@ class TaskManager: ObservableObject {
         content.body = "Your task \"\(task.name)\" is due soon!"
         content.sound = .default
 
-        // Trigger 0 minutes before the deadline
-        let triggerDate = Calendar.current.date(byAdding: .minute, value: 0, to: deadline) ?? deadline
+        // Trigger 5 minutes before the deadline
+        let triggerDate = Calendar.current.date(byAdding: .minute, value: -5, to: deadline) ?? deadline
         let triggerComponents = Calendar.current.dateComponents(
               [.year, .month, .day, .hour, .minute],
               from: triggerDate)
@@ -74,8 +75,6 @@ class TaskManager: ObservableObject {
                 formatter.timeZone = TimeZone.current // Apply local timezone
                 formatter.dateStyle = .medium
                 formatter.timeStyle = .short
-                
-                print("Notification scheduled for \(task.name) at \(formatter.string(from: triggerDate))")
             }
         }
     }
@@ -92,8 +91,7 @@ class TaskManager: ObservableObject {
         let notificationID = task.id.uuidString
         
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationID])
-        print("Notifcations after Delete:")
+        print("Notifications after Delete:")
         printPendingNotifications()
     }
-
 }

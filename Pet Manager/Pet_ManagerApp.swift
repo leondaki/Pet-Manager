@@ -26,6 +26,10 @@ struct Pet_ManagerApp: App {
                     .environmentObject(tabOption)
                     .environmentObject(settingsManager)
                     .opacity(showSplash ? 0 : 1) // Initially hidden
+                    .onAppear {
+                        // ask for user notification permission
+                        settingsManager.requestNotificationPermission()
+                    }
 
                 if showSplash {
                     LaunchScreen()

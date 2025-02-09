@@ -16,7 +16,7 @@ struct TaskListItemView<T: TaskType>: View {
     let isPreview: Bool
     
     var body: some View {
-        ZStack {
+        VStack {
             if isPreview {
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
@@ -38,12 +38,13 @@ struct TaskListItemView<T: TaskType>: View {
             }
             
             else if let task = task as? TaskItem, pets.count > 0 {
-                    NavigationLink(destination: EditTaskView(task: task, pets: pets, tasks: tasks, tempPet: pets[0])) {
+                 NavigationLink(destination: EditTaskView(task: task, pets: pets, tasks: tasks, tempPet: pets[0])) {
                         HStack {
                             TaskDetailsLeftView(tasks: tasks, task: task, isPreview: isPreview)
                             Spacer()
                             TaskDetailsRightView(task: task, pets: pets)
                         }
+                        
                         .padding()
                     }
                 }
@@ -96,7 +97,14 @@ struct TaskDetailsLeftView: View {
             
             if let task = task as? TaskItem, !isPreview {
                 Button(action: {
-                    taskManager.markAsCompleted(task: task) }) {
+                    if !task.completed {
+                        // task has been marked as complete
+                        taskManager.deleteNotification(for: task)
+                    }
+                    else {
+                        taskManager.scheduleNotification(for: task)
+                    }
+                    taskManager.toggleCompleted(task: task) }) {
                     Image(systemName: task.deco.taskImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)

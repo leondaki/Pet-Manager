@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C718AE3D2D57182F00091D43 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = C718AE3C2D57182F00091D43 /* test.swift */; };
 		C731E8692D53E864006F8AE0 /* SwiftDataViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C731E8682D53E864006F8AE0 /* SwiftDataViewer.swift */; };
 		C731E86B2D53EA0C006F8AE0 /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C731E86A2D53EA0C006F8AE0 /* PreviewContainer.swift */; };
 		C731E86D2D554836006F8AE0 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C731E86C2D554835006F8AE0 /* Launch Screen.storyboard */; };
@@ -32,6 +33,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C718AE3C2D57182F00091D43 /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
 		C731E8682D53E864006F8AE0 /* SwiftDataViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataViewer.swift; sourceTree = "<group>"; };
 		C731E86A2D53EA0C006F8AE0 /* PreviewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContainer.swift; sourceTree = "<group>"; };
 		C731E86C2D554835006F8AE0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 		C7B657D12D348D7A00AFA8A2 = {
 			isa = PBXGroup;
 			children = (
+				C718AE3C2D57182F00091D43 /* test.swift */,
 				C731E86E2D554EE6006F8AE0 /* LaunchScreen.swift */,
 				C731E86C2D554835006F8AE0 /* Launch Screen.storyboard */,
 				C7B658052D44367600AFA8A2 /* Settings.swift */,
@@ -233,6 +236,7 @@
 				C7B657E02D348D7A00AFA8A2 /* ContentView.swift in Sources */,
 				C7B658042D4342FE00AFA8A2 /* CustomTabBar.swift in Sources */,
 				C7B657FA2D37174700AFA8A2 /* MyPets.swift in Sources */,
+				C718AE3D2D57182F00091D43 /* test.swift in Sources */,
 				C7B658082D4585C100AFA8A2 /* CustomTextField.swift in Sources */,
 				C7B657DE2D348D7A00AFA8A2 /* Pet_ManagerApp.swift in Sources */,
 				C7B658062D44367600AFA8A2 /* Settings.swift in Sources */,
@@ -379,6 +383,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -410,6 +415,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

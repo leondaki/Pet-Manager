@@ -31,6 +31,7 @@ struct AddTaskView: View {
     }
 
     @EnvironmentObject var taskManager: TaskManager
+    @EnvironmentObject var settingsManager: SettingsManager
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) var modelContext
     
@@ -96,14 +97,12 @@ struct AddTaskView: View {
                                 )
           
                                 modelContext.insert(newTask)
-                                
-                                taskManager.checkNotificationPermission {
-                                    isAuthorized in
-                                    if isAuthorized {
-                                        taskManager.scheduleNotification(for: newTask)
-                                    }
+
+                                // add task notification
+                                if settingsManager.notificationsEnabled {
+                                    taskManager.scheduleNotification(for: newTask)
+                                    taskManager.printPendingNotifications()
                                 }
-                                taskManager.printPendingNotifications()
                                 
                                 presentationMode.wrappedValue.dismiss()
                             }) {
@@ -122,6 +121,7 @@ struct AddTaskView: View {
                                         .foregroundStyle(Color.accentColor)
                                 }
                             }
+                            .buttonStyle(PlainButtonStyle())
                             .disabled(!isButtonEnabled)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
                        }

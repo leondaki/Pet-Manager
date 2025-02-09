@@ -33,6 +33,7 @@ struct EditTaskView: View {
     @FocusState private var isDescriptionFocused: Bool
 
     @EnvironmentObject var taskManager: TaskManager
+    @EnvironmentObject var settingsManager: SettingsManager
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -107,15 +108,13 @@ struct EditTaskView: View {
                                 } catch {
                                     print("Failed to Update Task: \(error)")
                                 }
-//                                if let index = taskManager.tasks.firstIndex(where: { $0.id == task.id }) {
-//                                    taskManager.tasks[index] = tempTask
-//                                }
-//                                taskManager.checkNotificationPermission {
-//                                    isAuthorized in
-//                                    if isAuthorized {
-//                                        taskManager.updateNotification(for: tempTask)
-//                                    }
-//                                }
+                                
+                                // update task notification
+                                if settingsManager.notificationsEnabled {
+                                    taskManager.updateNotification(for: task)
+                                    taskManager.printPendingNotifications()
+                                }
+                                
                                 presentationMode.wrappedValue.dismiss()
                             }) {
                                 VStack {
@@ -138,7 +137,6 @@ struct EditTaskView: View {
                     }
                     .listRowBackground(Color.clear)
                     .frame(maxWidth: .infinity)
-
                 }
            }
             .onAppear {

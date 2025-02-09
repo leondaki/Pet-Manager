@@ -39,13 +39,27 @@ class SettingsManager: ObservableObject{
             self.selectedLaunchIcon = "Cat"
         }
     }
-      
     
     @AppStorage("notificationsEnabled") var notificationsEnabled = false
     
     func openAppSettings() {
         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+        }
+    }
+
+    // request permission on app launch
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Error requesting notification permissions: \(error.localizedDescription)")
+                } else if granted {
+                    print("✅ Notification permission granted!")
+                } else {
+                    print("❌ Notification permission denied.")
+                }
+            }
         }
     }
 }
@@ -60,6 +74,11 @@ struct SettingsView:View {
 
     @EnvironmentObject var settingsManager: SettingsManager
     @EnvironmentObject var taskManager: TaskManager
+   
+    @Environment(\.scenePhase) var scenePhase // for use in syncing local notifications toggle with system settings
+    @State private var showAlert: Bool = false
+    
+    let tasks: [TaskItem]
     
     var body: some View {
         VStack (spacing: 0) {
@@ -81,7 +100,7 @@ struct SettingsView:View {
                 }
             
             Form {
-                Section(header: Text("Username")
+                Section(header: Text("Name")
                     .font(.system(size: 18))
                     .listRowInsets(EdgeInsets())
                     .padding(.top, 30).padding(.bottom, 10)) {
@@ -104,18 +123,42 @@ struct SettingsView:View {
                             .onChange(of: settingsManager.notificationsEnabled) { _, newValue in
                                     if newValue {
                                         // check system level notification permission
-                                        taskManager.checkNotificationPermission {
-                                            isAuthorized in
+                                        taskManager.checkNotificationPermission { isAuthorized in
                                             if isAuthorized {
-                                                settingsManager.notificationsEnabled  = true
+                                                settingsManager.notificationsEnabled = true
+                                                
+                                                // re-add notifications for all upcoming tasks
+                                                for task in tasks {
+                                                    if !task.completed {
+                                                        taskManager.scheduleNotification(for: task)
+                                                    }
+                                                }
+                                                print("re-added notifications for upcoming tasks")
+                                                taskManager.printPendingNotifications()
+                                            }
+                                            else {
+                                                settingsManager.notificationsEnabled = false
+                                                // system level not authorized, go to system settings
+                                                showAlert = true
                                             }
                                         }
                                     } else {
                                         // cancels all current scheduled notifications
                                         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                                        settingsManager.notificationsEnabled = false
+                                        print("removed all pending notifications.")
                                     }
                                 }
+                            .alert("Enable Notifications", isPresented: $showAlert) {
+                                Button("Open App Settings") {
+                                    settingsManager.openAppSettings()
+                                }
+                                
+                                Button("Cancel", role: .cancel) {}
+                            } message: {
+                                Text("You previously disabled notifications. To enable them, go to Settings.")
                             }
+                        }
                 
                 Section(header: Text("App Theme").font(.system(size: 18))
                     .listRowInsets(EdgeInsets())
@@ -155,7 +198,30 @@ struct SettingsView:View {
             }
             
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in //settingsManager.checkNotificationStatus()
+        .onAppear {
+            // set enable notification toggle to match system notification settings
+            taskManager.checkNotificationPermission { isAuthorized in
+                if isAuthorized {
+                    settingsManager.notificationsEnabled = true
+                }
+                else {
+                    settingsManager.notificationsEnabled = false
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                // set enable notification toggle to match system notification settings
+                taskManager.checkNotificationPermission { isAuthorized in
+                    if isAuthorized {
+                        settingsManager.notificationsEnabled = true
+                    }
+                    else {
+                        settingsManager.notificationsEnabled = false
+                    }
+                }
+            }
+            
         }
        
     }

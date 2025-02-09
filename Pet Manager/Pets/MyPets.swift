@@ -11,11 +11,12 @@ import SwiftData
 
 @Model
 class MyPet {
-    // let id: UUID
+    var id: UUID
     var name: String
     @Relationship(deleteRule: .cascade, inverse: \TaskItem.pet) var tasks: [TaskItem]
     
     init(name: String, tasks: [TaskItem] = []) {
+        self.id = UUID()
         self.name = name
         self.tasks = tasks
     }
@@ -63,7 +64,30 @@ struct PetsListView: View {
                     }
                     .zIndex(1)
                 
-                PetsList(pets: pets)
+                if pets.count > 0 {
+                    PetsList(pets: pets)
+                }
+                else {
+                    Spacer()
+                    VStack {
+                        Text("Add a pet to create tasks!")
+                            .font(.system(size: 20, weight: .regular))
+                            .padding()
+                        
+                        NavigationLink(destination: AnyView(AddPetsView(pets: pets)))
+                        {
+                            Image(systemName: "plus.circle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 50)
+                                .foregroundStyle(Color(settingsManager.selectedAccentColor))
+                                .background(Circle().fill(.white))
+                        }
+                       
+                    }
+                 
+                    Spacer()
+                }
                     
             }
             .background(Color(UIColor.secondarySystemBackground))
@@ -77,48 +101,63 @@ struct PetsList:View {
     @State private var swipedRow: UUID? = nil
     
     @State private var isConfirmVisible: Bool = false
-    @State private var petToDeleteIndex: IndexSet?
+    @State private var petToDelete: MyPet?
     
     let pets : [MyPet]
     @Environment(\.modelContext) private var modelContext
     
-    private func confirmDelete(at offsets: IndexSet) {
-        petToDeleteIndex = offsets
+    // used to trigger pet deletion animation
+    @State var petDeleted:Bool = false
+    
+    private func confirmDelete(pet: MyPet) {
+        petToDelete = pet
         isConfirmVisible = true
     }
     
     var petToDeleteName: String {
-        if let index = petToDeleteIndex?.first {
-            return pets[index].name
+        if let pet = petToDelete {
+            return pet.name
         }
-        return "this pet"
+        return "this task"
     }
     
-    func deletePets(_ indexSet: IndexSet) {
-        for index in indexSet {
-            let pet = pets[index]
-            modelContext.delete(pet)
-        }
-        
-        petToDeleteIndex = nil
+    func deletePet(pet: MyPet?) {
+      if let petToDelete = pet {
+          withAnimation {
+              petDeleted = true
+              modelContext.delete(petToDelete)
+          }
+          petDeleted = false
+      }
     }
-                         
+
     var body: some View {
         List {
-            ForEach(pets) { pet in
+            ForEach(pets, id:\.id) { pet in
                 PetRowView(pet: pet)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(action: {
+                                confirmDelete(pet: pet)
+                            }, label: {
+                                Image(systemName: "trash.fill")
+                                    .tint(Color.red)
+                            })
+                    }
             }
-            .onDelete(perform: confirmDelete)
+            
         }
+        .listRowSpacing(20)
+        .animation(.easeInOut, value: petDeleted)
         .confirmationDialog("This will also delete all tasks for \(petToDeleteName).",
                             isPresented: $isConfirmVisible, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
-                deletePets(petToDeleteIndex ?? [])
+                deletePet(pet: petToDelete ?? nil)
              }
             Button("Cancel", role: .cancel) {
-                petToDeleteIndex = nil // Reset selection if canceled
+                petToDelete = nil // Reset selection if canceled
             }
          }
+      
     }
 }
 
